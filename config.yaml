@@ -1,0 +1,7 @@
+# 代码块需要哪些语言组件
+highlightjs:
+  - C
+  - Java
+  - Rust
+  - JavaScript
+  - SQL

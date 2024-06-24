@@ -1,0 +1,102 @@
+/* 自定义样式可以在这里添加 */
+
+@font-face {
+    font-family: 'Noto Serif SC';
+    src: url('./font/NotoSerifSC-VariableFont_wght.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+	font-family: 'Noto Serif SC', sans-serif;
+	/* 使用 Noto Serif SC 字体 */
+	line-height: 1.6;
+	margin: 0 auto;
+	max-width: 85%;
+	padding: 30px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border-left: 5px solid #4CAF50;
+	margin-bottom: 20px;
+	border-radius: 5px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	overflow-x: auto;
+	position: relative;
+	/* 确保行号可以绝对定位 */
+}
+
+code {
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 14px;
+}
+
+blockquote {
+	background-color: #f0f0f0;
+	border-left: 5px solid #ccc;
+	padding: 10px;
+	margin-left: 0;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 20px;
+	border: 1px solid #ccc;
+	border-radius: 10px;
+}
+
+th,
+td {
+	border: 1px solid #ccc;
+	padding: 8px;
+	text-align: left;
+}
+
+img {
+	max-width: 80%;
+	max-height: 80%;
+	height: auto;
+	display: block;
+	margin: auto;
+	border-radius: 5px;
+	box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+hr {
+	border: none;
+	border-top: 2px dashed #a5a4ad;
+	/* 将分隔线样式改为虚线 */
+	height: 1px;
+	margin: 20px 0;
+}
+
+.md-p {
+	display: block;
+	margin-block-start: 1em;
+	margin-block-end: 1em;
+	margin-inline-start: 0px;
+	margin-inline-end: 0px;
+	unicode-bidi: isolate;
+}
+
+
+.hljs-ln {
+	position: absolute;
+	left: -16px;
+	/* 调整行号的位置 */
+	padding: 8px 0 8px 0;
+	/* 调整行号的样式 */
+	pointer-events: none;
+	/* 使行号不可交互 */
+	user-select: none;
+	/* 禁止用户选择行号 */
+}
+
+.hljs-ln td {
+	padding-right: 10px;
+	/* 调整行号和代码之间的间距 */
+	text-align: right;
+	/* 右对齐行号 */
+}
