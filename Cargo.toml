@@ -1,0 +1,8 @@
+[package]
+name = "typikon"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+pulldown-cmark = { version = "0.10.0", default-features = false, features = ["html"] }
+colored = "2.0"

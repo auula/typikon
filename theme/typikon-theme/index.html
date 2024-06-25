@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>MySQL 8.x 安装和配置</title>
+	<link rel="stylesheet" href="assets/css/bootstrap.min.css">
+	<link rel="stylesheet" href="assets/sidebars.css">
+	<!-- Light theme stylesheet -->
+	<link rel="stylesheet" href="assets/light-theme.css" id="light-theme">
+	<!-- Dark theme stylesheet (initially disabled) -->
+	<link rel="stylesheet" href="assets/dark-theme.css" id="dark-theme">
+</head>
+
+<body>
+	<div class="container">
+
+		<div class="row">
+
+			<div class="col-md-4 col-sm-12">
+				<div class="flex-shrink-0 p-2" style="width: 100%;">
+					<a href="#"
+						class="d-flex align-items-center justify-content-center pb-3 mb-3 link-body-emphasis text-decoration-none border-bottom">
+						<span class="fs-4 fw-semibold">现在 Java 编程指南</span>
+					</a>
+					<ul class="list-unstyled ps-0">
+						<li class="mb-1">
+							<a class="btn d-inline-flex align-items-center rounded border-0">
+								第一章：语言的历史
+							</a>
+							<div class="collapse show" id="collapse1">
+								<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+									<li><a href="#"
+											class="link-body-emphasis d-inline-flex text-decoration-none rounded">
+											MySQL 8.x 安装和配置
+										</a>
+									</li>
+									<li><a href="#"
+											class="link-body-emphasis d-inline-flex text-decoration-none rounded">Updates</a>
+									</li>
+								</ul>
+							</div>
+						</li>
+						<li class="mb-1">
+							<a class="btn d-inline-flex align-items-center rounded border-0">
+								第二章：开发基础环境搭建
+							</a>
+							<div class="collapse show" id="collapse2">
+								<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+									<li><a href="#"
+											class="link-body-emphasis d-inline-flex text-decoration-none rounded">
+											MySQL 8.x 安装和配置
+										</a>
+									</li>
+									<li><a href="#"
+											class="link-body-emphasis d-inline-flex text-decoration-none rounded">Updates</a>
+									</li>
+								</ul>
+							</div>
+						</li>
+						<li class="mb-1">
+							<a class="btn d-inline-flex align-items-center rounded border-0 ">
+								第三章：数据类型和结构化编程
+							</a>
+							<div class="collapse show" id="collapse3">
+								<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+									<li><a href="#"
+											class="link-body-emphasis d-inline-flex text-decoration-none rounded">
+											MySQL 8.x 安装和配置
+										</a>
+									</li>
+									<li><a href="#"
+											class="link-body-emphasis d-inline-flex text-decoration-none rounded">Updates</a>
+									</li>
+								</ul>
+							</div>
+						</li>
+						<li class="mb-1">
+							<a class="btn d-inline-flex align-items-center rounded border-0">
+								第四章：面向对象编程
+							</a>
+							<div class="collapse show" id="collapse4">
+								<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+									<li><a href="#"
+											class="link-body-emphasis d-inline-flex text-decoration-none rounded">
+											MySQL 8.x 安装和配置
+										</a>
+									</li>
+									<li><a href="#"
+											class="link-body-emphasis d-inline-flex text-decoration-none rounded">Updates</a>
+									</li>
+								</ul>
+							</div>
+						</li>
+						<li class="mb-1">
+							<a class="btn d-inline-flex align-items-center rounded border-0">
+								第五章：标准库和新特性
+							</a>
+							<div class="collapse show" id="collapse4">
+								<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+									<li><a href="#"
+											class="link-body-emphasis d-inline-flex text-decoration-none rounded">
+											MySQL 8.x 安装和配置
+										</a>
+									</li>
+									<li><a href="#"
+											class="link-body-emphasis d-inline-flex text-decoration-none rounded">Updates</a>
+									</li>
+								</ul>
+							</div>
+						</li>
+
+						<li class="border-top my-3"></li>
+						<li class="mb-3 mb-md-0 text-body-secondary">© 2024 Company, Inc</li>
+					</ul>
+				</div>
+			</div>
+
+			<div class="col-md-8 col-sm-12">
+				<div id="markdown-content">
+					<!-- Markdown 内容 -->
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="assets/js/bootstrap.bundle.js"></script>
+	<script src="assets/js/bootstrap.min.js"></script>
+	<script src="assets/highlight/highlight.min.js"></script>
+	<script src="assets/highlight/languages/shell.min.js"></script>
+	<script src="assets/highlight/languages/sql.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.1.3/marked.min.js"></script>
+	<script>
+		document.addEventListener('DOMContentLoaded', (event) => {
+			// Markdown 格式的文本内容
+			var markdownText = `
+### MySQL 8.x 安装和配置
+
+在 MySQL 8.x 中引入了许多新特性和改进，包括 JSON 和 JavaScript 作为数据库查询语言，以及更好的性能和安全性。例如，在连接过程中出现的 \`Public Key Retrieval is not allowed\` 错误提示，这些都是新版本的特性。本文将记录在最新版本的 Ubuntu 中安装 MySQL 8.x 的完整过程。
+
+---
+
+### 安装和配置
+
+在安装 MySQL 8.x 之前，可以先更新操作系统和软件包：
+
+\`\`\`sh
+sudo apt update && apt upgrade -y
+\`\`\`
+
+更新完成后，可以执行以下命令来查找和安装 MySQL 8.x 软件包：
+
+\`\`\`sh
+sudo apt search mysql
+sudo apt install mysql-*
+\`\`\`
+
+安装完成后，使用 \`sudo mysql_secure_installation\` 初始化 root 用户的密码：
+
+\`\`\`sh
+sudo mysql_secure_installation
+\`\`\`
+
+如果需要允许远程用户访问 MySQL 服务器，可以修改配置文件 \`/etc/mysql/mysql.conf.d/mysqld.cnf\` 中的 \`bind-address\`，设置为 \`0.0.0.0\`：
+
+\`\`\`ini
+bind-address = 0.0.0.0
+mysqlx-bind-address = 127.0.0.1
+\`\`\`
+
+然后可以为远程用户授予访问权限：
+
+\`\`\`sql
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED WITH mysql_native_password BY '新密码' WITH GRANT OPTION;
+\`\`\`
+
+---
+
+### 解决安全连接问题
+
+在 MySQL 8.x 中，如果出现 \`Public Key Retrieval is not allowed\` 错误提示，可以执行以下命令来解决：
+
+\`\`\`sql
+ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY '新密码';
+\`\`\`
+
+执行后，刷新授权表：
+
+\`\`\`sql
+flush privileges;
+\`\`\`
+
+最后，请确保允许服务器上的 \`3306\` 端口连接。
+
+
+## 列表示例
+
+- 项目1
+- 项目2
+  - 子项目1
+  - 子项目2
+  
+  
+## 插入普通图片
+
+![](https://img.ibyte.me/470eor.jpg)  
+
+## 引用示例
+
+> 这是一个引用示例，可以包含多行文本和**加粗**文字。
+
+## 表格示例
+
+
+
+| Header 1 | Header 2 | Header 3 |
+|----------|----------|----------|
+| Row 1, Column 1 | Row 1, Column 2 | Row 1, Column 3 |
+| Row 2, Column 1 | Row 2, Column 2 | Row 2, Column 3 |
+| Row 3, Column 1 | Row 3, Column 2 | Row 3, Column 3 |
+
+
+`;
+			const darkThemeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+			const lightThemeLink = document.getElementById('light-theme');
+			const darkThemeLink = document.getElementById('dark-theme');
+
+			changeTheme = (mediaQuery) => {
+				if (mediaQuery.matches) {
+					// Dark mode
+					lightThemeLink.setAttribute('disabled', true);
+					darkThemeLink.removeAttribute('disabled');
+				} else {
+					// Light mode
+					darkThemeLink.setAttribute('disabled', true);
+					lightThemeLink.removeAttribute('disabled');
+				}
+			};
+
+			// Initial check
+			changeTheme(darkThemeMediaQuery);
+
+			// Listen for changes in OS theme
+			darkThemeMediaQuery.addListener(changeTheme);
+
+			// 将 Markdown 转换为 HTML
+			var htmlContent = marked(markdownText);
+
+			// 更新页面内容
+			document.getElementById('markdown-content').innerHTML = htmlContent;
+
+			// 初始化 highlight.js
+			document.querySelectorAll('pre code').forEach((block) => {
+				hljs.highlightElement(block);
+			});
+
+			// 添加自定义 md-p 样式
+			var markdownContent = document.getElementById('markdown-content');
+			if (markdownContent) {
+				var paragraphs = markdownContent.querySelectorAll('p');
+				paragraphs.forEach(function (paragraph) {
+					paragraph.classList.add('md-p');
+				});
+			}
+
+		});
+
+		// 监听系统主题切换操作
+		window.onload = () => {
+			const darkThemeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+			const lightThemeLink = document.getElementById('light-theme');
+			const darkThemeLink = document.getElementById('dark-theme');
+
+			changeTheme = (mediaQuery) => {
+				if (mediaQuery.matches) {
+					// Dark mode
+					lightThemeLink.setAttribute('disabled', true);
+					darkThemeLink.removeAttribute('disabled');
+				} else {
+					// Light mode
+					darkThemeLink.setAttribute('disabled', true);
+					lightThemeLink.removeAttribute('disabled');
+				}
+			};
+
+			// Initial check
+			changeTheme(darkThemeMediaQuery);
+
+			// Listen for changes in OS theme
+			darkThemeMediaQuery.addListener(changeTheme);
+		};
+	</script>
+
+</body>
+
+</html>
