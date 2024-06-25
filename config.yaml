@@ -5,3 +5,7 @@ highlightjs:
   - Rust
   - JavaScript
   - SQL
+
+mapping:
+  layout: views
+  
