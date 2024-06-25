@@ -1,3 +1,31 @@
+use std::path::Path;
+
+use typikon::html::Hypertext;
+
+#[test]
+fn test_hypertext_create() {
+    let path = Path::new("tests/html/index.html");
+    let src_path = Path::new("tests/html/chapter_1.1.0.md");
+    let md = typikon::html::from_markdown(src_path).unwrap();
+
+    let html = Hypertext::new("tests/html/index.html", md);
+
+    println!("{:?}", html);
+
+    assert_eq!(path, html.get_file_path());
+
+    match html.to_disk_html() {
+        Ok(_) => assert!(true),
+        Err(err) => {
+            eprintln!("create HTML file fail: {}", err);
+            assert!(false);
+        }
+    }
+}
+
+#[test]
+fn test_md_to_html() {
+    let markdown_input = r#"
 ### MySQL 8.x 安装和配置
 
 在 MySQL 8.x 中引入了许多新特性和改进，包括 JSON 和 JavaScript 作为数据库查询语言，以及更好的性能和安全性。例如，在连接过程中出现的 `Public Key Retrieval is not allowed` 错误提示，这些都是新版本的特性。本文将记录在最新版本的 Ubuntu 中安装 MySQL 8.x 的完整过程。
@@ -63,9 +91,7 @@ flush privileges;
 - 项目2
   - 子项目1
   - 子项目2
-  
-这是一个 [超链接测试]() 对文本内容。
-  
+    
 ## 插入普通图片
 
 ![java](https://img.ibyte.me/470eor.jpg)  
@@ -81,3 +107,12 @@ flush privileges;
 | Alice  | 25   | 北京   |
 | Bob    | 30   | 上海   |
 | Carol  | 28   | 广州   |
+"#;
+
+    // 将 Markdown 转换为 HTML
+    let html_output = typikon::html::Markdown::new(&markdown_input);
+    // 打印 HTML 输出
+    println!("{}", html_output.to_html());
+
+    assert!(true);
+}
