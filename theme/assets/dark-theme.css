@@ -1,0 +1,196 @@
+/* 其他 CSS 样式 */
+@import url('./highlight/styles/stackoverflow-dark.min.css');
+
+@font-face {
+    font-family: 'Noto Serif SC';
+    src: url('./font/NotoSerifSC-VariableFont_wght.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: 'Noto Serif SC', sans-serif;
+    line-height: 1.6;
+    margin: 0 auto;
+    max-width: 85%;
+    padding: 30px;
+    background-color: #1a1a1a;
+    /* Dark background color */
+    color: #e0e0e0;
+    /* Light text color */
+}
+
+
+
+pre {
+    background-color: #2b2b2b;
+    /* Darker background for code blocks */
+    border-left: 5px solid #4CAF50;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    position: relative;
+}
+
+code {
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    font-size: 14px;
+    color: #e0e0e0;
+    /* Light text color for code */
+}
+
+blockquote {
+    background-color: #333333;
+    /* Darker background for blockquotes */
+    border-left: 5px solid #ccc;
+    padding: 10px;
+    margin-left: 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    border: 1px solid #555;
+    /* Border color for tables */
+    border-radius: 10px;
+}
+
+.directory-menu li {
+    color: #fff;
+    /* White text color for list items */
+}
+
+th,
+td {
+    border: 1px solid #555;
+    /* Border color for table cells */
+    padding: 8px;
+    text-align: left;
+    color: #e0e0e0;
+    /* Light text color for table cells */
+}
+
+img {
+    max-width: 80%;
+    max-height: 80%;
+    height: auto;
+    display: block;
+    margin: auto;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+hr {
+    border: none;
+    border-top: 2px dashed #a5a4ad;
+    height: 1px;
+    margin: 20px 0;
+    border-color: #555;
+    /* Color for dashed horizontal rule */
+}
+
+.hljs-ln {
+    position: absolute;
+    left: -16px;
+    padding: 8px 0 8px 0;
+    pointer-events: none;
+    user-select: none;
+}
+
+.hljs-ln td {
+    padding-right: 10px;
+    text-align: right;
+}
+
+/* 暗黑主题下白色目录 */
+/* New styles for sidebar links */
+.col-4 a {
+    color: #fff;
+    /* White text color */
+    text-decoration: none;
+    display: block;
+}
+
+
+.col-4 a:hover,
+.col-4 a:focus {
+    color: #ccc;
+}
+
+/* Style for specific link */
+.col-4 a.d-flex span {
+    color: #fff;
+}
+
+/* Style for list item links */
+.col-4 li a {
+    color: #fff;
+    /* White text color */
+    text-decoration: none;
+    display: block;
+}
+
+.col-4 li a:hover,
+.col-4 li a:focus {
+    color: #ccc;
+    /* Gray text color on hover/focus */
+    background-color: #333;
+    /* Background color on hover/focus */
+}
+
+/* Style for collapse links */
+.btn-toggle-nav li a {
+    color: #fff !important;
+    /* White text color */
+    text-decoration: none;
+}
+
+.btn-toggle-nav li a:hover,
+.btn-toggle-nav li a:focus {
+    color: #ccc !important;
+    /* Gray text color on hover/focus */
+    background-color: #333;
+    /* Background color on hover/focus */
+    border-radius: 5px;
+}
+
+.text-body-secondary {
+    --bs-text-opacity: 1;
+    color: #ccc !important;
+}
+
+/* 鼠标悬停灰色 */
+
+.col-4 a.d-inline-flex:hover,
+.col-4 a.d-inline-flex:focus {
+    color: #fff;
+    /* White text color on hover/focus */
+    background-color: #6c757d;
+    /* Gray background color on hover/focus */
+    border-radius: 5px;
+}
+
+/* Additional style for specific button */
+.col-4 a.d-inline-flex.active,
+.col-4 a.d-inline-flex:active {
+    background-color: #6c757d;
+    /* Gray background color on active state */
+    color: #fff;
+    /* White text color on active state */
+}
+
+.btn.d-inline-flex.align-items-center.rounded.border-0:hover {
+    background-color: #6c757d;
+}
+
+/* p 标签内容剧中 */
+.md-p {
+    display: block;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    unicode-bidi: isolate;
+}
