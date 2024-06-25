@@ -91,3 +91,7 @@ hr {
 	text-align: right;
 	/* 右对齐行号 */
 }
+
+.btn.d-inline-flex.align-items-center.rounded.border-0:hover {
+    background-color: var(--bs-tertiary-bg);
+}
