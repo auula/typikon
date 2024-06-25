@@ -58,7 +58,7 @@ table {
 }
 
 .directory-menu li {
-    color: #fff;
+    color: #e0e0e0;
     /* White text color for list items */
 }
 
@@ -73,8 +73,8 @@ td {
 }
 
 img {
-    max-width: 80%;
-    max-height: 80%;
+    max-width: 90%;
+    max-height: 90%;
     height: auto;
     display: block;
     margin: auto;
@@ -107,7 +107,7 @@ hr {
 /* 暗黑主题下白色目录 */
 /* New styles for sidebar links */
 .col-4 a {
-    color: #fff;
+    color: #e0e0e0;
     /* White text color */
     text-decoration: none;
     display: block;
@@ -116,17 +116,17 @@ hr {
 
 .col-4 a:hover,
 .col-4 a:focus {
-    color: #ccc;
+    color: #e0e0e0;
 }
 
 /* Style for specific link */
 .col-4 a.d-flex span {
-    color: #fff;
+    color: #e0e0e0;
 }
 
 /* Style for list item links */
 .col-4 li a {
-    color: #fff;
+    color: #e0e0e0;
     /* White text color */
     text-decoration: none;
     display: block;
@@ -134,7 +134,7 @@ hr {
 
 .col-4 li a:hover,
 .col-4 li a:focus {
-    color: #ccc;
+    color: #e0e0e0;
     /* Gray text color on hover/focus */
     background-color: #333;
     /* Background color on hover/focus */
@@ -142,14 +142,14 @@ hr {
 
 /* Style for collapse links */
 .btn-toggle-nav li a {
-    color: #fff !important;
+    color: #e0e0e0 !important;
     /* White text color */
     text-decoration: none;
 }
 
 .btn-toggle-nav li a:hover,
 .btn-toggle-nav li a:focus {
-    color: #ccc !important;
+    color: #e0e0e0 !important;
     /* Gray text color on hover/focus */
     background-color: #333;
     /* Background color on hover/focus */
@@ -158,14 +158,14 @@ hr {
 
 .text-body-secondary {
     --bs-text-opacity: 1;
-    color: #ccc !important;
+    color: #e0e0e0 !important;
 }
 
 /* 鼠标悬停灰色 */
 
 .col-4 a.d-inline-flex:hover,
 .col-4 a.d-inline-flex:focus {
-    color: #fff;
+    color: #e0e0e0;
     /* White text color on hover/focus */
     background-color: #6c757d;
     /* Gray background color on hover/focus */
@@ -177,7 +177,7 @@ hr {
 .col-4 a.d-inline-flex:active {
     background-color: #6c757d;
     /* Gray background color on active state */
-    color: #fff;
+    color: #e0e0e0;
     /* White text color on active state */
 }
 
@@ -193,4 +193,14 @@ hr {
     margin-inline-start: 0px;
     margin-inline-end: 0px;
     unicode-bidi: isolate;
+}
+
+
+/* 目录菜单悬浮 */
+.col-4 {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    height: 100%; 
+    overflow-y: auto; 
 }

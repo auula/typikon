@@ -54,8 +54,8 @@ td {
 }
 
 img {
-    max-width: 80%;
-    max-height: 80%;
+    max-width: 90%;
+    max-height: 90%;
     height: auto;
     display: block;
     margin: auto;
@@ -104,3 +104,13 @@ hr {
     margin-inline-end: 0px;
     unicode-bidi: isolate;
 }
+
+/* 目录菜单悬浮 */
+.col-4 {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    height: 100%; 
+    overflow-y: auto; 
+}
+
