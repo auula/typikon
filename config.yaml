@@ -1,11 +1,14 @@
 # 代码块需要哪些语言组件
-highlightjs:
+highlight:
   - C
   - Java
   - Rust
   - JavaScript
   - SQL
 
-mapping:
-  layout: views
-  
+# 目录结构映射
+directory:
+  theme: theme # 主题目录
+  source: book # markdown 源文件目录
+  output: docs # 编译渲染输出目录
+

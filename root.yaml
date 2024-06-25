@@ -1,3 +1,4 @@
+# 书的根路径映射文件
 book:
   title: "Book Title"
   chapters:
