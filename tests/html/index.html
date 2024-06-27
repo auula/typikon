@@ -1,0 +1,53 @@
+<h3>MySQL 8.x 安装和配置</h3>
+<p>在 MySQL 8.x 中引入了许多新特性和改进，包括 JSON 和 JavaScript 作为数据库查询语言，以及更好的性能和安全性。例如，在连接过程中出现的 <code>Public Key Retrieval is not allowed</code> 错误提示，这些都是新版本的特性。本文将记录在最新版本的 Ubuntu 中安装 MySQL 8.x 的完整过程。</p>
+<hr />
+<h3>安装和配置</h3>
+<p>在安装 MySQL 8.x 之前，可以先更新操作系统和软件包：</p>
+<pre><code class="language-sh">sudo apt update &amp;&amp; apt upgrade -y
+</code></pre>
+<p>更新完成后，可以执行以下命令来查找和安装 MySQL 8.x 软件包：</p>
+<pre><code class="language-sh">sudo apt search mysql
+sudo apt install mysql-*
+</code></pre>
+<p>安装完成后，使用 <code>sudo mysql_secure_installation</code> 初始化 root 用户的密码：</p>
+<pre><code class="language-sh">sudo mysql_secure_installation
+</code></pre>
+<p>如果需要允许远程用户访问 MySQL 服务器，可以修改配置文件 <code>/etc/mysql/mysql.conf.d/mysqld.cnf</code> 中的 <code>bind-address</code>，设置为 <code>0.0.0.0</code>：</p>
+<pre><code class="language-ini">bind-address = 0.0.0.0
+mysqlx-bind-address = 127.0.0.1
+</code></pre>
+<p>然后可以为远程用户授予访问权限：</p>
+<pre><code class="language-sql">GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED WITH mysql_native_password BY '新密码' WITH GRANT OPTION;
+</code></pre>
+<hr />
+<h3>解决安全连接问题</h3>
+<p>在 MySQL 8.x 中，如果出现 <code>Public Key Retrieval is not allowed</code> 错误提示，可以执行以下命令来解决：</p>
+<pre><code class="language-sql">ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY '新密码';
+</code></pre>
+<p>执行后，刷新授权表：</p>
+<pre><code class="language-sql">flush privileges;
+</code></pre>
+<p>最后，请确保允许服务器上的 <code>3306</code> 端口连接。</p>
+<h2>列表示例</h2>
+<ul>
+<li>项目1</li>
+<li>项目2
+<ul>
+<li>子项目1</li>
+<li>子项目2</li>
+</ul>
+</li>
+</ul>
+<p>这是一个 <a href="">超链接测试</a> 对文本内容。</p>
+<h2>插入普通图片</h2>
+<p><img src="https://img.ibyte.me/470eor.jpg" alt="java" /></p>
+<h2>引用示例</h2>
+<blockquote>
+<p>这是一个引用示例，可以包含多行文本和<strong>加粗</strong>文字。</p>
+</blockquote>
+<h2>表格示例</h2>
+<table><thead><tr><th>姓名</th><th>年龄</th><th>城市</th></tr></thead><tbody>
+<tr><td>Alice</td><td>25</td><td>北京</td></tr>
+<tr><td>Bob</td><td>30</td><td>上海</td></tr>
+<tr><td>Carol</td><td>28</td><td>广州</td></tr>
+</tbody></table>

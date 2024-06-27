@@ -1,13 +1,13 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Book {
+pub struct Book {
     title: String,
     chapters: Vec<Chapter>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Chapter {
+pub struct Chapter {
     title: String,
     path: String,
     url: String,
@@ -15,8 +15,8 @@ struct Chapter {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct SubChapter {
+pub struct SubChapter {
     title: String,
     path: String,
-    url: String
+    url: String,
 }

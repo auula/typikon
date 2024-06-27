@@ -1,9 +1,5 @@
-pub mod generator;
-pub mod settings;
-pub mod command;
-pub mod console;
-pub mod pargs;
 pub mod book;
-
-
-
+pub mod html;
+pub mod utils;
+pub mod cli;
+pub mod settings;

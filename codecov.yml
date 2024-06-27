@@ -1,0 +1,7 @@
+# Used in Codecov after updating
+coverage:
+  branch: dev
+  round: up
+  range: 0..10
+  precision: 5  
+  file: coverage.xml  # 指定覆盖率报告文件的路径
