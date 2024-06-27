@@ -1,22 +1,11 @@
-use typikon::command;
+use typikon::command::Command;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+#[test]
+fn test_command_from_str() {
+    assert!(matches!(Command::from_str("build"), Command::Build));
+    assert!(matches!(Command::from_str("theme"), Command::Theme));
+    assert!(matches!(Command::from_str("init"), Command::Init));
 
-    #[test]
-    fn test_handle_theme_command() {
-        // Simulate command-line arguments
-        let vec_strings = vec![
-            "test".to_string(),
-            "theme".to_string(),
-            "--get=https://github.com/auula/typikon.git".to_string(),
-        ];
-
-        // Assert that the command identifier matches
-        assert_eq!(command::THEME, "theme");
-
-        // Call the function under test
-        command::handle_theme_command(&vec_strings);
-    }
+    let unknown_command = Command::from_str("unknown");
+    assert!(matches!(unknown_command, Command::Unknown(_)));
 }

@@ -24,12 +24,13 @@ fn main() {
         println!("{}\nUsage: typikon <command> [<args>]", to_banner_string());
         return;
     }
-    
+
     // Get the first argument, which represents the sub-command
     // Match on the enum variant
     match Command::from_str(&args[1]) {
-        Command::Build => typikon::command::handle_build_command(),
-        Command::Theme => typikon::command::handle_theme_command(&args),
+        Command::Init => typikon::command::handle_init(),
+        Command::Build => typikon::command::handle_build(),
+        Command::Theme => typikon::command::handle_theme(&args),
         Command::Unknown(s) => {
             eprintln!("Unknown command: {}", s);
         }

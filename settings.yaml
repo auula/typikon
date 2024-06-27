@@ -1,0 +1,31 @@
+settings:
+  book:
+    title: 现代 Java 编程指南
+    author: Leon Ding
+    description: 一本基于 JDK21 版本讲解 Java21 新特性编程实践书籍，采用 WSL + VSCode 作为基础开发环境。
+    language: zh-cn
+    theme: typikon
+
+  highlight:
+    - C
+    - Java
+    - Rust
+    - JavaScript
+    - SQL
+
+  directory:
+    theme: theme
+    source: book
+    output: docs
+
+  deployment:
+    repository: git@github.com:auula/typikon.git
+
+  custom_css:
+    - assets/light-theme.css
+    - assets/dark-theme.css
+    - assets/sidebars.css
+
+  custom_js:
+    - assets/sidebars.js
+    - assets/google-analytics.js

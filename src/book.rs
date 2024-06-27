@@ -10,7 +10,7 @@ struct Book {
 struct Chapter {
     title: String,
     path: String,
-    url: String
+    url: String,
     sub_chapters: Vec<SubChapter>,
 }
 
