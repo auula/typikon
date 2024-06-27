@@ -16,7 +16,7 @@ impl Console {
     }
 
     pub fn info(&mut self, format_message: std::fmt::Arguments) {
-        self.log("[INFO]", |msg| msg.green(), format_message);
+        self.log("[INFO]", |msg: &str| msg.green(), format_message);
     }
 
     pub fn warn(&mut self, format_message: std::fmt::Arguments) {
