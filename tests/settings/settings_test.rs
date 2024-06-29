@@ -1,5 +1,6 @@
 use std::{fs, path::Path};
-use typikon::settings;
+
+use typikon::book::Settings;
 
 #[test]
 fn test_settings_serialize() {
@@ -7,13 +8,13 @@ fn test_settings_serialize() {
 
     match fs::read_to_string(path) {
         Ok(content) => {
-            let settings: settings::Settings =
-                serde_yaml::from_str(&content).expect("Failed to serialize");
-            // 打印序列化后的 YAML 字符串
-            println!("{:?}", settings);
+            let res: Result<Settings, serde_yaml::Error> = serde_yaml::from_str(&content);
+            match res {
+                Ok(settings) => println!("{:?}", settings),
+                Err(_) => assert!(false),
+            }
             assert!(true)
-        },
+        }
         Err(_) => assert!(false),
     };
-
 }

@@ -40,3 +40,4 @@ pub fn from_markdown(path: &Path) -> io::Result<Markdown> {
     file.read_to_string(&mut content)?;
     Ok(Markdown(content))
 }
+

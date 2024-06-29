@@ -14,7 +14,7 @@ fn test_hypertext_create() {
 
     assert_eq!(path, html.get_file_path());
 
-    match html.create_disk_html() {
+    match html.to_disk_html() {
         Ok(_) => assert!(true),
         Err(err) => {
             eprintln!("create HTML file fail: {}", err);

@@ -30,9 +30,9 @@ jobs:
       run: cargo build --verbose
     - name: Run tests
       run: cargo test --verbose
-    - name: Run Cargo Tarpaulin
+    - name: Run cargo-tarpaulin
       run: cargo tarpaulin --out Xml
-    - name: Install cargo-audit
+    - name: Run cargo-audit
       run: cargo install cargo-audit  && cargo-audit audit
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4.0.1

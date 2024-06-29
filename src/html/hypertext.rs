@@ -25,7 +25,7 @@ impl Hypertext {
         Path::new(&self.path)
     }
 
-    pub fn create_disk_html(&self) -> io::Result<()> {
+    pub fn to_disk_html(&self) -> io::Result<()> {
         // 打开文件，如果不存在则创建
         let mut file = File::create(self.path.clone())?;
         // 写入 HTML 内容

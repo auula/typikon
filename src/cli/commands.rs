@@ -1,9 +1,11 @@
-use core::fmt;
 use colored::Colorize;
+use core::fmt;
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
-use std::process::exit;
 use std::sync::Mutex;
+
+use crate::book;
+use crate::utils::Logger;
 
 #[derive(Eq, Hash, PartialEq, Debug)]
 pub enum Command {
@@ -93,7 +95,6 @@ pub fn handle_theme_command(args: &[String]) {
     }
 }
 
-
 // 通过命令行传入的 args 参数打印 help 信息
 pub fn handle_help_command(args: &[String]) {
     if let Some(option) = args.get(0) {
@@ -104,21 +105,33 @@ pub fn handle_help_command(args: &[String]) {
                     println!("{}", help_text);
                 } else {
                     eprintln!("No help available for command: {}", option);
-                    exit(1);
                 }
             }
             Command::Unknown(_) => {
-                eprintln!("Unknown option: {} \nAvailable option: [init,theme,build]", option);
-            },
+                eprintln!(
+                    "Unknown option: {} \nAvailable option: [init,theme,build]",
+                    option
+                );
+            }
         }
     }
 }
-
 
 pub fn handle_init_command(_args: &[String]) {
     unimplemented!()
 }
 
 pub fn handle_build_command(_args: &[String]) {
-    unimplemented!()
+    let mut log = Logger::console_log();
+    match book::new_builder() {
+        Ok(mut builder) => {
+            builder.set_out_dir("./new_docs/");
+            if let Err(err) = builder.render() {
+                log.error(format_args!("{}", err));
+            }
+        }
+        Err(err) => {
+            log.error(format_args!("{}", err));
+        }
+    }
 }

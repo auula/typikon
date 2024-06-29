@@ -1,17 +1,17 @@
 # 书的根路径映射文件
-book:
+root:
   title: "Book Title"
   chapters:
     - title: "Chapter 1"
       path: "/path/to/chapter1.md"
-      subChapters:
+      sub_chapters:
         - title: "Section 1.1"
           path: "/path/to/chapter1-section1.1.md"
         - title: "Section 1.2"
           path: "/path/to/chapter1-section1.2.md"
     - title: "Chapter 2"
       path: "/path/to/chapter2.md"
-      subChapters:
+      sub_chapters:
         - title: "Section 2.1"
           path: "/path/to/chapter2-section2.1.md"
         - title: "Section 2.2"
