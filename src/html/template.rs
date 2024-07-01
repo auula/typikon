@@ -35,3 +35,7 @@ impl Template {
 pub fn render_to_html(_tmpl: Vec<Template>) {
     unimplemented!()
 }
+
+pub fn get_templates() -> Option<Vec<Template>> {
+    Some(vec![])
+}

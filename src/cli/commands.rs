@@ -80,7 +80,8 @@ static HELP_INFO: Lazy<Mutex<HashMap<Command, colored::ColoredString>>> = Lazy::
     Mutex::new(help_info)
 });
 
-pub fn handle_theme_command(args: &[String], log: &mut Logger) {
+pub fn handle_theme_command(args: &[String]) {
+    let mut log = Logger::console_log();
     match args.get(2) {
         Some(option) => {
             if let Some(value) = option.strip_prefix("--get=") {
@@ -94,7 +95,8 @@ pub fn handle_theme_command(args: &[String], log: &mut Logger) {
 }
 
 // 通过命令行传入的 args 参数打印 help 信息
-pub fn handle_help_command(args: &[String], log: &mut Logger) {
+pub fn handle_help_command(args: &[String]) {
+    let mut log = Logger::console_log();
     if let Some(option) = args.get(0) {
         let help = HELP_INFO.lock().unwrap();
         match Command::from_str(option) {
@@ -110,19 +112,23 @@ pub fn handle_help_command(args: &[String], log: &mut Logger) {
                 option
             )),
         }
+    } else {
+        log.error(format_args!(
+            "Lack of options! Available option: [init,theme,build]"
+        ))
     }
 }
 
-pub fn handle_init_command(_args: &[String], _log: &mut Logger) {
+pub fn handle_init_command(_args: &[String]) {
+    let mut log = Logger::console_log();
     unimplemented!()
 }
 
-pub fn handle_build_command(_args: &[String], log: &mut Logger) {
+pub fn handle_build_command(_args: &[String]) {
+    let mut log = Logger::console_log();
     match book::new_builder() {
-        Ok(builder) => match builder.render() {
-            Ok(_) => {
-                
-            }
+        Ok(mut builder) => match builder.render() {
+            Ok(_) => {}
             Err(err) => log.error(format_args!("{}", err)),
         },
         Err(err) => log.error(format_args!("{}", err)),

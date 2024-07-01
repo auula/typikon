@@ -1,4 +1,5 @@
 use pulldown_cmark::{html, Options, Parser};
+use serde::{Deserialize, Serialize};
 use std::{
     fs::File,
     io::{self, Read},
@@ -6,7 +7,7 @@ use std::{
 };
 
 // Define the Markdown type
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Markdown(String);
 
 impl Markdown {

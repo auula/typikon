@@ -5,6 +5,7 @@ use std::io::{self, Write};
 // DATE TIME Formmated
 const DATETIME_FORMAT: &str = "%Y/%m/%d %H:%M:%S";
 
+#[derive(Debug)]
 pub struct Logger {
     out: io::Stdout,
 }

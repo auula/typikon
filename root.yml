@@ -4,18 +4,16 @@ root:
   index: "index.md"
   chapters:
     - title: "Chapter 1"
-      path: "/chapter1"
       index: "/chapter1/chapter1.md"
       sub_chapters:
         - title: "Section 1.1"
-          path: "/chapter1/chapter1-section1.1.md"
+          path: "book/chapter_1.1.0.md"
         - title: "Section 1.2"
-          path: "/chapter1/chapter1-section1.2.md"
+          path: "book/chapter_1.1.1.md"
     - title: "Chapter 2"
-      path: "/chapter2"
       index: "/chapter2/chapter2.md"
       sub_chapters:
         - title: "Section 2.1"
-          path: "/chapter2/chapter2-section2.1.md"
+          path: "book/chapter_1.1.0.md"
         - title: "Section 2.2"
-          path: "/chapter2/chapter2-section2.2.md"
+          path: "book/chapter_1.1.1.md"

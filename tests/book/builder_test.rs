@@ -4,7 +4,20 @@ use typikon::book;
 fn test_new_builder() {
     match book::new_builder() {
         Ok(builder) => {
-            println!("{:?}", builder.engine);
+            for view in builder.engine.get_template_names() {
+                println!("{:?}",view);
+            }
+            assert!(true);
+        }
+        Err(_) => assert!(false),
+    }
+}
+
+#[test]
+fn test_new_builder_get_hypertext() {
+    match book::new_builder() {
+        Ok(mut builder) => {
+            println!("{:?}", &mut builder.get_chapters_hypertext());
             assert!(true);
         }
         Err(_) => assert!(false),

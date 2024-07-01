@@ -17,7 +17,6 @@ pub struct InnerRoot {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Chapter {
     pub title: String,
-    pub path: String,
     pub index: String,
     pub sub_chapters: Vec<SubChapter>,
 }
@@ -33,10 +32,4 @@ pub fn get_root() -> Result<Root, Box<dyn Error>> {
     let content = fs::read_to_string(path)?;
     let root: Root = serde_yaml::from_str(&content)?;
     Ok(root)
-}
-
-impl Chapter {
-    pub fn get_sub_chapters(&self) -> &[SubChapter] {
-        &self.sub_chapters
-    }
 }

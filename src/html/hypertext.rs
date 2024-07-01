@@ -3,11 +3,13 @@ use std::{
     io::{self, Write}, path::Path,
 };
 
+use serde::{Deserialize, Serialize};
+
 use super::Markdown;
 
 // Define the HTML type
 // 部分 Markdown 已经转义好的内容
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Hypertext {
     path: String,
     markdown: Markdown,

@@ -17,9 +17,9 @@ Usage: typikon <command> [<args>...]
 
 The commands are:
 
-    init      Initialize directory to working directory
-    build     Renderer static html file and output to book
+    init      Initialize to working directory
     theme     Install the specified theme files
+    build     Builder static html file and output to book
 
 Use typikon help <command> for more information about a command.               
 ";
@@ -36,6 +36,7 @@ pub fn parse_args() -> (Command, Vec<String>) {
     let args: Vec<String> = env::args().collect();
 
     if args.len() < 2 {
+        out_banner_string();
         exit(0)
     }
 

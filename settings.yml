@@ -1,9 +1,10 @@
 settings:
   about:
-    title: 现代 Java 编程指南
+    title: Typikon Book
     author: Leon Ding
-    description: 一本基于 JDK21 版本讲解 Java21 新特性编程实践书籍，采用 WSL + VSCode 作为基础开发环境。
+    description: Typikon name derived from Typikon Book, the a static website rendering tool similar to mdbook and hugo, but it focuses only on rendering markdown into an online book, and is easier to use than the other tools.
     language: zh-cn
+    keywords: typikon,book,website,generator,static,html,css,js,theme,rust
 
   directory:
     theme: theme

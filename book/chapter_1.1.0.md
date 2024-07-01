@@ -1,4 +1,4 @@
-### MySQL 8.x 安装和配置
+### /book/chapter_1.1.0.md
 
 在 MySQL 8.x 中引入了许多新特性和改进，包括 JSON 和 JavaScript 作为数据库查询语言，以及更好的性能和安全性。例如，在连接过程中出现的 `Public Key Retrieval is not allowed` 错误提示，这些都是新版本的特性。本文将记录在最新版本的 Ubuntu 中安装 MySQL 8.x 的完整过程。
 
@@ -64,7 +64,7 @@ flush privileges;
   - 子项目1
   - 子项目2
   
-这是一个 [超链接测试]() 对文本内容。
+这是一个 [超链接测试](https://www.ibyte.me/) 对文本内容。
   
 ## 插入普通图片
 

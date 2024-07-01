@@ -1,14 +1,15 @@
 use std::{fs, path::Path};
 
-use std::error::Error;
 use serde::{Deserialize, Serialize};
+use std::error::Error;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct About {
     pub title: String,
     pub author: String,
-    pub description: String,
     pub language: String,
+    pub keywords: String,
+    pub description: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
