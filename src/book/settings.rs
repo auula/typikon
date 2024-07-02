@@ -1,4 +1,4 @@
-use std::{fs, path::Path};
+use std::fs;
 
 use serde::{Deserialize, Serialize};
 use std::error::Error;
@@ -20,11 +20,6 @@ pub struct Directory {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Deployment {
-    pub repository: String,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
 pub struct Settings {
     pub settings: InnerSettings,
 }
@@ -34,26 +29,14 @@ pub struct InnerSettings {
     pub about: About,
     pub theme: String,
     pub directory: Directory,
-    pub deployment: Deployment,
     pub custom_css: Vec<String>,
     pub custom_js: Vec<String>,
 }
 
-impl Settings {
-    pub fn new() -> Option<Settings> {
-        match fs::read_to_string("settings.yml") {
-            Ok(content) => match serde_yaml::from_str(&content) {
-                Ok(settings) => Some(settings),
-                Err(_) => None,
-            },
-            Err(_) => None,
-        }
-    }
-}
-
 pub fn get_settings() -> Result<Settings, Box<dyn Error>> {
-    let path = Path::new("settings.yml");
-    let content = fs::read_to_string(path)?;
-    let settings: Settings = serde_yaml::from_str(&content)?;
+    let content = fs::read_to_string("settings.yml")
+        .map_err(|_| format!("The \"settings.yml\" mapping file was not found"))?;
+    let settings: Settings = serde_yaml::from_str(&content)
+        .map_err(|_| format!("The \"settings.yml\" content is not formatted properly"))?;
     Ok(settings)
 }

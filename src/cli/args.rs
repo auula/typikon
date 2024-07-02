@@ -12,31 +12,44 @@ const BANNER: &str = r"
       |__/|_|     v{}
 
 Typikon lets you use markdown to write your online books.
+GitHub: http://typikonbook.github.io  License: Apache2.0        
+";
 
+const HELP_INFO: &str = r"
 Usage: typikon <command> [<args>...]
 
 The commands are:
 
     init      Initialize to working directory
-    theme     Install the specified theme files
     build     Builder static html file and output to book
 
-Use typikon help <command> for more information about a command.               
+Use typikon help <command> for more information about a command.  
 ";
 
 const VERSION: &str = "0.1.1-beta";
 
-pub fn out_banner_string() {
-    println!("{}",format!("{}", BANNER.replace("{}", VERSION).as_str().purple()))
+pub fn print_banner_help() {
+    println!(
+        "{}",
+        format!(
+            "{}\n{}",
+            BANNER.replace("{}", VERSION).as_str().purple(),
+            HELP_INFO.purple()
+        )
+    )
 }
 
-// 解析命令行输入的参数，返回 Command 枚举和除了命令本身以外的参数
-pub fn parse_args() -> (Command, Vec<String>) {
+pub fn print_banner() {
+    println!("{}", BANNER.replace("{}", VERSION).as_str().purple())
+}
 
+// Analyze the parameters input in the command line, 
+// return the Command enumeration and parameters other than the command itself
+pub fn parse_args() -> (Command, Vec<String>) {
     let args: Vec<String> = env::args().collect();
 
     if args.len() < 2 {
-        out_banner_string();
+        print_banner_help();
         exit(0)
     }
 
@@ -45,5 +58,3 @@ pub fn parse_args() -> (Command, Vec<String>) {
 
     (Command::from_str(cmd.as_str()), params)
 }
-
-

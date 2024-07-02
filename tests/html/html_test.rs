@@ -4,23 +4,12 @@ use typikon::html::Hypertext;
 
 #[test]
 fn test_hypertext_create() {
-    let path = Path::new("tests/html/index.html");
     let src_path = Path::new("tests/html/chapter_1.1.0.md");
     let md = typikon::html::from_markdown(src_path).unwrap();
 
-    let html = Hypertext::new("tests/html/index.html", md);
+    let html = Hypertext::new("Test Title","tests/html/index.html", md);
 
-    println!("{:?}", html);
-
-    assert_eq!(path, html.get_file_path());
-
-    match html.to_disk_html() {
-        Ok(_) => assert!(true),
-        Err(err) => {
-            eprintln!("create HTML file fail: {}", err);
-            assert!(false);
-        }
-    }
+    println!("{:?}", html.to_html());
 }
 
 #[test]
@@ -112,7 +101,7 @@ flush privileges;
     // 将 Markdown 转换为 HTML
     let html_output = typikon::html::Markdown::new(&markdown_input);
     // 打印 HTML 输出
-    println!("{}", html_output.to_html());
+    println!("{:?}", html_output.to_html());
 
     assert!(true);
 }

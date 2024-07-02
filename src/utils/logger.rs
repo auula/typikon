@@ -17,7 +17,7 @@ impl Logger {
 
     fn log(&mut self, level: &str, color: fn(&str) -> ColoredString, format_message: &str) {
         let time = Local::now().format(DATETIME_FORMAT);
-        let formatted = format!(" {:<8} {} 💬 {}\n", color(level), time, format_message);
+        let formatted = format!("{:<8} {} 💬 {}\n", color(level), time, format_message);
         self.out
             .write_all(formatted.as_bytes())
             .expect("Failed to write to stdout");
@@ -26,7 +26,7 @@ impl Logger {
     pub fn info(&mut self, format_message: std::fmt::Arguments) {
         self.log(
             "[INFO]",
-            |level: &str| level.on_green(),
+            |level: &str| level.green(),
             &format!("{}", format!("{}", format_message).as_str().green()),
         );
     }
@@ -34,7 +34,7 @@ impl Logger {
     pub fn warn(&mut self, format_message: std::fmt::Arguments) {
         self.log(
             "[WARING]",
-            |level| level.on_purple(),
+            |level| level.purple(),
             &format!("{}", format!("{}", format_message).as_str().yellow()),
         );
     }
@@ -42,7 +42,7 @@ impl Logger {
     pub fn error(&mut self, format_message: std::fmt::Arguments) {
         self.log(
             "[ERROR]",
-            |level: &str| level.on_red(),
+            |level: &str| level.red(),
             &format!("{}", format!("{}", format_message).as_str().red()),
         );
     }

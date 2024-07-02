@@ -1,41 +1,67 @@
-use super::{Hypertext, Markdown};
+use serde::{Deserialize, Serialize}; // Importing serde attributes.
 
-// 模版 html 和需要被渲染的数据内容
-#[derive(Debug)]
+use crate::{
+    // Importing modules from the crate.
+    book::{self, About, SubChapter}, // Importing structs About and SubChapter from book module.
+    utils,                           // Importing utils module.
+};
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Chapter {
+    pub title: String,                 // Title of the chapter.
+    pub path: String,                  // Path to the chapter.
+    pub sub_chapters: Vec<SubChapter>, // List of sub-chapters.
+}
+
+// Template struct for HTML template and data to be rendered
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Template {
-    // 模版名称用于区分多个文件的模版
-    pub name: String,
-    // 模版路径，模版存储多个文件层次结构中
-    pub path: String,
-    // 模版文件的内容
-    pub content: String,
-    // 要插入渲染好的 HTML 数据，这个是通过 MD 转换好的 HTML 数据段
-    pub hypertext: Hypertext,
-    // 模版被渲染之后元数据，自定义 css 和 头部信息
-    pub data_ctx: tera::Context,
+    pub title: String,          // Title of the template.
+    pub keywords: String,       // Keywords for SEO.
+    pub description: String,    // Description for SEO.
+    pub chapters: Vec<Chapter>, // List of chapters.
+    pub language: String,
 }
 
 impl Template {
-    pub fn new(_tmpl: String) -> Template {
-        unimplemented!()
-    }
+    // Constructor method to create a new Template instance
+    pub fn new(about: &About, chapters: &Vec<book::Chapter>) -> Template {
+        let mut new_chapters: Vec<Chapter> = Vec::new(); // Initialize empty vector for chapters.
 
-    pub fn empty() -> Template {
+        // Format chapters
+        chapters.iter().for_each(|chapter| {
+            let mut new_sub_chapters: Vec<SubChapter> = Vec::new(); // Initialize empty vector for sub-chapters.
+
+            // Format sub-chapters
+            chapter.sub_chapters.iter().for_each(|sub_chapter| {
+                let sub_chapter_path = utils::remove_md_extension(&sub_chapter.path) // Remove Markdown extension and format path.
+                    .replace(" ", "-") // Replace spaces with hyphens.
+                    .to_lowercase(); // Convert to lowercase.
+
+                new_sub_chapters.push(SubChapter {
+                    title: sub_chapter.title.clone(), // Clone title of sub-chapter.
+                    path: sub_chapter_path,           // Assign formatted path.
+                });
+            });
+
+            // Format main chapter
+            let chapter = Chapter {
+                title: chapter.title.clone(), // Clone title of chapter.
+                path: utils::remove_md_extension(&chapter.index) // Remove Markdown extension and format path.
+                    .replace(" ", "-") // Replace spaces with hyphens.
+                    .to_lowercase(), // Convert to lowercase.
+                sub_chapters: new_sub_chapters, // Assign formatted sub-chapters.
+            };
+
+            new_chapters.push(chapter); // Push formatted chapter to new_chapters vector.
+        });
+
         Template {
-            name: "index.html".to_string(),
-            path: "index.html".to_string(),
-            content: "".to_string(),
-            hypertext: Hypertext::new("index.html", Markdown::new("")),
-            data_ctx: tera::Context::new(),
+            chapters: new_chapters,                 // Assign formatted chapters.
+            title: about.title.clone(),             // Clone title of about section.
+            keywords: about.keywords.clone(),       // Clone keywords for SEO.
+            language: about.language.clone(),       // Initialize content as empty string.
+            description: about.description.clone(), // Clone description for SEO.
         }
     }
-}
-
-// 渲染模版引擎函数
-pub fn render_to_html(_tmpl: Vec<Template>) {
-    unimplemented!()
-}
-
-pub fn get_templates() -> Option<Vec<Template>> {
-    Some(vec![])
 }

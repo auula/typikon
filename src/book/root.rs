@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::fs;
-use std::path::Path;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Root {
@@ -10,7 +9,7 @@ pub struct Root {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct InnerRoot {
-    pub title: String,
+    pub index: String,
     pub chapters: Vec<Chapter>,
 }
 
@@ -28,8 +27,9 @@ pub struct SubChapter {
 }
 
 pub fn get_root() -> Result<Root, Box<dyn Error>> {
-    let path = Path::new("root.yml");
-    let content = fs::read_to_string(path)?;
-    let root: Root = serde_yaml::from_str(&content)?;
+    let content = fs::read_to_string("root.yml")
+        .map_err(|_| format!("The \"root.yml\" mapping file was not found"))?;
+    let root: Root = serde_yaml::from_str(&content)
+        .map_err(|_| format!("The \"root.yml\" content is not formatted properly"))?;
     Ok(root)
 }

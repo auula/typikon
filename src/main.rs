@@ -8,7 +8,6 @@ fn main() {
         Command::Init => typikon::cli::handle_init_command(&args),
         Command::Help => typikon::cli::handle_help_command(&args),
         Command::Build => typikon::cli::handle_build_command(&args),
-        Command::Theme => typikon::cli::handle_theme_command(&args),
-        Command::Unknown(_) => typikon::cli::out_banner_string(),
+        Command::Unknown(_) => typikon::cli::print_banner_help(),
     }
 }

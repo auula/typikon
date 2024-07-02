@@ -1,15 +1,5 @@
 use typikon::book;
 
-#[test]
-fn test_settings_serialize() {
-    match book::Settings::new() {
-        Some(settings) => {
-            println!("{:?}", settings);
-            assert!(true);
-        }
-        None => assert!(false),
-    };
-}
 
 #[test]
 fn test_get_settings() {

@@ -1,19 +1,26 @@
-# 书的根路径映射文件
+# Book root path mapping file
 root:
-  title: "Book Title"
   index: "index.md"
   chapters:
-    - title: "Chapter 1"
-      index: "/chapter1/chapter1.md"
+    - title: "English"
+      index: "english.md"
+      # Sub chapters root
       sub_chapters:
-        - title: "Section 1.1"
-          path: "book/chapter_1.1.0.md"
-        - title: "Section 1.2"
-          path: "book/chapter_1.1.1.md"
-    - title: "Chapter 2"
-      index: "/chapter2/chapter2.md"
+        - title: "Introduce"
+          path: "introduce.md"
+        - title: "Quick Start"
+          path: "quickstart.md"
+        - title: "Settings"
+          path: "settings.md"
+      # Sub chapters root
+    - title: "简体中文"
+      index: "chinese.md"
       sub_chapters:
-        - title: "Section 2.1"
-          path: "book/chapter_1.1.0.md"
-        - title: "Section 2.2"
-          path: "book/chapter_1.1.1.md"
+        # Chapter content
+        - title: "概述介绍"
+          path: "introduce-zh.md"
+        - title: "快速开始"
+          path: "quickstart-zh.md"
+        - title: "自定义设置"
+          path: "settings-zh.md"
+ 

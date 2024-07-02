@@ -1,74 +1,97 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ language }}">
 
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-	<title>{{ book.title }}</title>
-	<meta name="description" content="{{ book.description }}" />
-	<meta name="keywords"
-		content="{{ book.keywords }}" />
-	<meta name="generator" content="{{ version }}" />
+	<title>{{ title }}</title>
+	<meta name="description" content="{{ description }}" />
+	<meta name="keywords" content="{{ keywords }}" />
+	<meta name="generator" content="typikon" />
 	<meta name="template" content="typikon-theme" />
 
-
-	<link rel="stylesheet" href="assets/css/bootstrap.min.css">
-	<link rel="stylesheet" href="assets/sidebars.css">
+	{% for css_path in custom_css %}
+	<link rel="stylesheet" href="{{ css_path | safe }}">
+	{% endfor %}
 	<!-- Light theme stylesheet -->
-	<link rel="stylesheet" href="assets/light-theme.css" id="light-theme">
+	<link rel="stylesheet" href="/assets/light-theme.css" id="light-theme">
 	<!-- Dark theme stylesheet (initially disabled) -->
-	<link rel="stylesheet" href="assets/dark-theme.css" id="dark-theme">
+	<link rel="stylesheet" href="/assets/dark-theme.css" id="dark-theme" disabled>
+
 </head>
 
 <body>
 	<div class="container">
-
 		<div class="row">
-
 			<div class="col-md-4 col-sm-12">
 				<div class="flex-shrink-0 p-2" style="width: 100%;">
-					<a href="#"
+					<a href="/index.html"
 						class="d-flex align-items-center justify-content-center pb-3 mb-3 link-body-emphasis text-decoration-none border-bottom">
-						<span class="fs-4 fw-semibold">{{ book.title }}</span>
+						<span class="fs-4 fw-semibold">{{ title }}</span>
 					</a>
 					<ul class="list-unstyled ps-0">
-						<!-- 子章节目录结构，一个数组遍历渲染 -->
+						{% for chapter in chapters %}
 						<li class="mb-1">
-							<a class="btn d-inline-flex align-items-center rounded border-0">
-								{book.chapter.title}
+							<a class="btn d-inline-flex align-items-center rounded border-0"
+								href="/{{ chapter.path }}/index.html">
+								{{ chapter.title }}
 							</a>
-							<!-- 每个子章节下面还有其他的文章 -->
 							<div class="collapse show" id="collapse1">
 								<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-									<li><a href="#"
+									{% for sub_chapter in chapter.sub_chapters %}
+									<li>
+										<a href="/{{ chapter.path }}/{{ sub_chapter.path }}.html"
 											class="link-body-emphasis d-inline-flex text-decoration-none rounded">
-											{book.sub_chapters.title}
+											{{ sub_chapter.title }}
 										</a>
 									</li>
+									{% endfor %}
 								</ul>
 							</div>
 						</li>
-
+						{% endfor %}
 						<li class="border-top my-3"></li>
-						<li class="mb-3 mb-md-0 text-body-secondary">© 2024 Company, Inc</li>
+						<li class="mb-3 mb-md-0 text-body-secondary">Copyright © Typikon Inc</li>
 					</ul>
 				</div>
 			</div>
 
 			<div class="col-md-8 col-sm-12">
 				<div id="markdown-content">
-					{book.page.content}
+					{{ content | safe }}
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<script src="assets/js/bootstrap.bundle.js"></script>
-	<script src="assets/js/bootstrap.min.js"></script>
-	<script src="assets/highlight/highlight.min.js"></script>
-	<script src="assets/highlight/languages/shell.min.js"></script>
-	<script src="assets/highlight/languages/sql.min.js"></script>
+	<script src="/assets/highlight/highlight.min.js"></script>
+	<script src="/assets/highlight/languages/shell.min.js"></script>
+	<script src="/assets/highlight/languages/sql.min.js"></script>
+	<script src="/assets/highlight/languages/java.min.js"></script>
+	<script src="/assets/highlight/languages/rust.min.js"></script>
+	<script src="/assets/highlight/languages/javascript.min.js"></script>
+	<script src="/assets/highlight/languages/c.min.js"></script>
+	<script src="/assets/highlight/languages/cpp.min.js"></script>
+	<script src="/assets/highlight/languages/kotlin.min.js"></script>
+	<script src="/assets/highlight/languages/rust.min.js"></script>
+	<script src="/assets/highlight/languages/python.min.js"></script>
+	<script src="/assets/highlight/languages/csharp.min.js"></script>
+	<script src="/assets/highlight/languages/css.min.js"></script>
+	<script src="/assets/highlight/languages/swift.min.js"></script>
+	<script src="/assets/highlight/languages/xml.min.js"></script>
+	<script src="/assets/highlight/languages/yaml.min.js"></script>
+	<script src="/assets/highlight/languages/ruby.min.js"></script>
+	<script src="/assets/highlight/languages/php.min.js"></script>
+	<script src="/assets/highlight/languages/go.min.js"></script>
+	<script src="/assets/highlight/languages/dart.min.js"></script>
+	<script src="/assets/highlight/languages/bash.min.js"></script>
+	<script src="/assets/highlight/languages/dockerfile.min.js"></script>
+
+	{% for js_path in custom_js %}
+	<script src="{{ js_path | safe }}"></script>
+	{% endfor %}
+
 	<script>
 		document.addEventListener('DOMContentLoaded', (event) => {
 
