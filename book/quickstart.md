@@ -1,6 +1,6 @@
 ## Quick Start
 
-To use the Typikon program, you must first install Typikon on your computer. During the installation process, download the appropriate binary package for your computer's version from the [release page](). Once you have downloaded the Typikon binary zip package to your computer:
+To use the Typikon program, you must first install Typikon on your computer. During the installation process, download the appropriate binary package for your computer's version from the [release page](https://github.com/auula/typikon/releases). Once you have downloaded the Typikon binary zip package to your computer:
 
 > Before using Typikon, ensure that your computer is successfully connected to the international internet. If you are in mainland China, you may encounter issues creating a working directory. If this happens, try using acceleration or enabling proxy software before using Typikon to initialize the directory.
 
