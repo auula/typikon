@@ -7,13 +7,14 @@
 当下载好 zip 二进制软件包后，请使用 `unzip` 或者其他解压软件来解压 `typikon-darwin-x64-beta-v0.1.1.zip` 软件包，命令如下：
 
 ```shell
-unzip typikon-darwin-x64-beta-v0.1.1.zip -d /Users/dings/devsoft
+unzip typikon-darwin-x64-beta-v0.1.1.zip -d /usr/local/bin
+chmod +x /usr/local/bin/typikon
 ```
 
 通过手动解压二进制到指定目录中，如果你想要全局使用 typikon 程序，那么必须将 typikon 所在的路径添加到计算机操作系统的环境变量中，例如：
 
 ```shell
-export TYPIKON="/Users/dings/devsoft"
+export TYPIKON="/usr/local/bin"
 export PATH=$TYPIKON:$PATH
 ```
 
@@ -85,7 +86,7 @@ root:
 
 ```
 
-而 `markdown` 文件默认存储在 `example/book` 目录中，你目前所阅读这个页面就是通过此种方式生成渲染的。
+源 `markdown` 文件默认存储在 `example/book` 目录中，你目前所阅读这个页面就是通过此种方式生成渲染的。
 
 ---
 
@@ -130,7 +131,8 @@ GitHub: http://typikonbook.github.io  License: Apache2.0
 [INFO]   2024/07/04 00:43:24 💬 Rendering of static resource files complete 🎉
 ```
 
-使用本地服务器 `live-server` 来测试生成静态网站：
+目前 typikon 程序没有内置静态文件服务器，会在未来的新版本添加支持；
+可以使用本地服务器 `live-server` 来测试生成静态网站：
 
 ```shell
 $: live-server docs

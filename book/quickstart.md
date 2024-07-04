@@ -7,13 +7,14 @@ To use the Typikon program, you must first install Typikon on your computer. Dur
 After downloading the zip binary package, unzip it using `unzip` or another decompression software. For example:
 
 ```shell
-unzip typikon-darwin-x64-beta-v0.1.1.zip -d /Users/dings/devsoft
+unzip typikon-darwin-x64-beta-v0.1.1.zip -d /usr/local/bin
+chmod +x /usr/local/bin/typikon
 ```
 
 Then manually extract the binaries to the specified directory. If you want to use the Typikon program globally, you must add the path where Typikon is located to the environment variables of your computer's operating system. For example:
 
 ```shell
-export TYPIKON="/Users/dings/devsoft"
+export TYPIKON="/usr/local/bin"
 export PATH=$TYPIKON:$PATH
 ```
 

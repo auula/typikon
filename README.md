@@ -22,8 +22,12 @@ Typikon name derived from [Typikon](https://en.wikipedia.org/wiki/Typikon) Book,
 ## Preview
 
 <div style="display: flex; justify-content: space-around;">
-    <img src="https://img.ibyte.me/a0mt96.png" alt="Alt text" style="width: 400px; height: 300px;">
-    <img src="https://img.ibyte.me/e68k6e.png" alt="Alt text" style="width: 400px; height: 300px;">
+    <img src="https://img.ibyte.me/z1zano.png" alt="Alt text" style="width: 400px; height: 300px;">
+    <img src="https://img.ibyte.me/lvc0iv.png" alt="Alt text" style="width: 400px; height: 300px;">
 </div>
 
 ---
+
+## Document
+
+To learn how to use the `Typikon` program, you can refer to the documentation that I have written. This documentation is generally rendered and built using Typikon. The online documentation can be accessed at the following address: [https://typikonbook.github.io](https://typikonbook.github.io) 🌟.
