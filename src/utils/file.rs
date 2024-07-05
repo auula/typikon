@@ -15,22 +15,22 @@ pub fn remove_md_extension(filename: &str) -> String {
     filename.to_string()
 }
 
-pub fn download_zip() -> Result<(), Box<dyn std::error::Error>> {
+pub fn download_zip() -> anyhow::Result<()> {
     let repo_url = "https://github.com/typikonbook/typikon-book/archive/refs/heads/main.zip";
     let zip_path = Path::new("repo.zip");
     let extract_path = Path::new(".");
 
     let mut response = get(repo_url)?;
-    let mut out = File::create(&zip_path)?;
+    let mut out = File::create(zip_path)?;
     copy(&mut response, &mut out)?;
-    let zip_file = File::open(&zip_path)?;
+    let zip_file = File::open(zip_path)?;
     let mut archive = ZipArchive::new(zip_file)?;
-    archive.extract(&extract_path)?;
+    archive.extract(extract_path)?;
 
     Ok(())
 }
 
-pub fn move_dir_contents(src: &Path, dst: &Path) -> std::io::Result<()> {
+pub fn move_dir_contents(src: &Path, dst: &Path) -> anyhow::Result<()> {
     // 确保目标目录存在
     fs::create_dir_all(dst)?;
 
@@ -57,14 +57,14 @@ pub fn move_dir_contents(src: &Path, dst: &Path) -> std::io::Result<()> {
     Ok(())
 }
 
-pub fn delete_file(file_path: &Path) -> std::io::Result<()> {
+pub fn delete_file(file_path: &Path) -> anyhow::Result<()> {
     if file_path.exists() && file_path.is_file() {
         fs::remove_file(file_path)?;
     }
     Ok(())
 }
 
-pub fn delete_folder(folder_path: &Path) -> std::io::Result<()> {
+pub fn delete_folder(folder_path: &Path) -> anyhow::Result<()> {
     if folder_path.exists() && folder_path.is_dir() {
         fs::remove_dir_all(folder_path)?;
     }

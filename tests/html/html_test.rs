@@ -7,7 +7,7 @@ fn test_hypertext_create() {
     let src_path = Path::new("tests/html/chapter_1.1.0.md");
     let md = typikon::html::from_markdown(src_path).unwrap();
 
-    let html = Hypertext::new("Test Title","tests/html/index.html", md);
+    let html = Hypertext::new("Test Title", "tests/html/index.html", md);
 
     println!("{:?}", html.to_html());
 }
@@ -80,10 +80,10 @@ flush privileges;
 - 项目2
   - 子项目1
   - 子项目2
-    
+
 ## 插入普通图片
 
-![java](https://img.ibyte.me/470eor.jpg)  
+![java](https://img.ibyte.me/470eor.jpg)
 
 ## 引用示例
 
@@ -99,7 +99,7 @@ flush privileges;
 "#;
 
     // 将 Markdown 转换为 HTML
-    let html_output = typikon::html::Markdown::new(&markdown_input);
+    let html_output = typikon::html::Markdown::new(markdown_input);
     // 打印 HTML 输出
     println!("{:?}", html_output.to_html());
 

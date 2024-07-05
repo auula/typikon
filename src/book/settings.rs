@@ -1,7 +1,6 @@
-use std::fs;
-
+use crate::error::Error;
 use serde::{Deserialize, Serialize};
-use std::error::Error;
+use std::fs;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct About {
@@ -33,10 +32,9 @@ pub struct InnerSettings {
     pub custom_js: Vec<String>,
 }
 
-pub fn get_settings() -> Result<Settings, Box<dyn Error>> {
-    let content = fs::read_to_string("settings.yml")
-        .map_err(|_| format!("The \"settings.yml\" mapping file was not found"))?;
-    let settings: Settings = serde_yaml::from_str(&content)
-        .map_err(|_| format!("The \"settings.yml\" content is not formatted properly"))?;
+pub fn get_settings() -> anyhow::Result<Settings> {
+    let content = fs::read_to_string("settings.yml").map_err(|_| Error::RootFileNotFound)?;
+    let settings =
+        serde_yaml::from_str(&content).map_err(|_| Error::RootFileContentNotFormatted)?;
     Ok(settings)
 }

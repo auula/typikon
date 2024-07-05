@@ -1,5 +1,6 @@
 use chrono::Local;
 use colored::*;
+use std::fmt;
 use std::io::{self, Write};
 
 // DATE TIME Formmated
@@ -23,27 +24,27 @@ impl Logger {
             .expect("Failed to write to stdout");
     }
 
-    pub fn info(&mut self, format_message: std::fmt::Arguments) {
+    pub fn info(&mut self, format_message: fmt::Arguments) {
         self.log(
             "[INFO]",
             |level: &str| level.green(),
-            &format!("{}", format!("{}", format_message).as_str().green()),
+            &format!("{}", format!("{}", format_message).green()),
         );
     }
 
-    pub fn warn(&mut self, format_message: std::fmt::Arguments) {
+    pub fn warn(&mut self, format_message: fmt::Arguments) {
         self.log(
             "[WARING]",
             |level| level.purple(),
-            &format!("{}", format!("{}", format_message).as_str().yellow()),
+            &format!("{}", format!("{}", format_message).yellow()),
         );
     }
 
-    pub fn error(&mut self, format_message: std::fmt::Arguments) {
+    pub fn error(&mut self, format_message: fmt::Arguments) {
         self.log(
             "[ERROR]",
             |level: &str| level.red(),
-            &format!("{}", format!("{}", format_message).as_str().red()),
+            &format!("{}", format!("{}", format_message).red()),
         );
     }
 }

@@ -31,3 +31,12 @@ Typikon name derived from [Typikon](https://en.wikipedia.org/wiki/Typikon) Book,
 ## Document
 
 To learn how to use the `Typikon` program, you can refer to the documentation that I have written. This documentation is generally rendered and built using Typikon. The online documentation can be accessed at the following address: [https://typikonbook.github.io](https://typikonbook.github.io) 🌟.
+
+
+---
+
+## WeChat
+
+<img src="https://github.com/auula/typikon/assets/38412458/1eac857f-0309-404d-a8f9-f92dd1606677" alt="Alt text" style="width: 400px; height: 600px;">
+
+

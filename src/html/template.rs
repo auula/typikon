@@ -25,17 +25,17 @@ pub struct Template {
 
 impl Template {
     // Constructor method to create a new Template instance
-    pub fn new(about: &About, chapters: &Vec<book::Chapter>) -> Template {
-        let mut new_chapters: Vec<Chapter> = Vec::new(); // Initialize empty vector for chapters.
+    pub fn new(about: &About, chapters: &[book::Chapter]) -> Template {
+        let mut new_chapters = Vec::new(); // Initialize empty vector for chapters.
 
         // Format chapters
         chapters.iter().for_each(|chapter| {
-            let mut new_sub_chapters: Vec<SubChapter> = Vec::new(); // Initialize empty vector for sub-chapters.
+            let mut new_sub_chapters = Vec::new(); // Initialize empty vector for sub-chapters.
 
             // Format sub-chapters
             chapter.sub_chapters.iter().for_each(|sub_chapter| {
                 let sub_chapter_path = utils::remove_md_extension(&sub_chapter.path) // Remove Markdown extension and format path.
-                    .replace(" ", "-") // Replace spaces with hyphens.
+                    .replace(' ', "-") // Replace spaces with hyphens.
                     .to_lowercase(); // Convert to lowercase.
 
                 new_sub_chapters.push(SubChapter {
@@ -44,19 +44,16 @@ impl Template {
                 });
             });
 
-            // Format main chapter
-            let chapter = Chapter {
+            new_chapters.push(Chapter {
                 title: chapter.title.clone(), // Clone title of chapter.
                 path: utils::remove_md_extension(&chapter.index) // Remove Markdown extension and format path.
-                    .replace(" ", "-") // Replace spaces with hyphens.
+                    .replace(' ', "-") // Replace spaces with hyphens.
                     .to_lowercase(), // Convert to lowercase.
                 sub_chapters: new_sub_chapters, // Assign formatted sub-chapters.
-            };
-
-            new_chapters.push(chapter); // Push formatted chapter to new_chapters vector.
+            }); // Push formatted chapter to new_chapters vector.
         });
 
-        Template {
+        Self {
             chapters: new_chapters,                 // Assign formatted chapters.
             title: about.title.clone(),             // Clone title of about section.
             keywords: about.keywords.clone(),       // Clone keywords for SEO.
