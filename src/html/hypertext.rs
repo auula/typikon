@@ -15,7 +15,7 @@ impl Hypertext {
         Hypertext {
             title: title.to_string(),
             path: path.to_string(),
-            markdown: markdown,
+            markdown,
         }
     }
 

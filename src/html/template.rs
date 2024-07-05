@@ -30,7 +30,7 @@ impl Template {
 
         // Format chapters
         chapters.iter().for_each(|chapter| {
-            let mut new_sub_chapters: Vec<SubChapter> = Vec::new(); // Initialize empty vector for sub-chapters.
+            let mut new_sub_chapters = Vec::new(); // Initialize empty vector for sub-chapters.
 
             // Format sub-chapters
             chapter.sub_chapters.iter().for_each(|sub_chapter| {
@@ -56,7 +56,7 @@ impl Template {
             new_chapters.push(chapter); // Push formatted chapter to new_chapters vector.
         });
 
-        Template {
+        Self {
             chapters: new_chapters,                 // Assign formatted chapters.
             title: about.title.clone(),             // Clone title of about section.
             keywords: about.keywords.clone(),       // Clone keywords for SEO.

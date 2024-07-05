@@ -6,7 +6,7 @@ use crate::{
     html::{self, Hypertext, Markdown, Template}, // Importing types Hypertext, Markdown, and Template from html module.
     utils::{self, Logger},                       // Importing utils module and Logger type from it.
 };
-use std::{collections::HashMap, fs, io, path::Path}; // Importing standard library modules.
+use std::{collections::HashMap, fs, path::Path}; // Importing standard library modules.
 use tera::{Context, Tera}; // Importing Context and Tera types from tera crate.
 
 #[derive(Debug)]
@@ -18,14 +18,14 @@ pub struct Builder {
 
 impl Builder {
     // Render the entire book
-    pub fn render(&mut self) -> io::Result<()> {
+    pub fn render(&mut self) -> anyhow::Result<()> {
         cli::print_banner(); // Printing CLI banner.
         self.create_directory(); // Create output directory.
         self.copy_theme_assets(); // Copy theme assets.
         self.render_index_html();
         self.render_chapter_html(); // Render HTML for chapters.
         self.render_sub_chapter_html(); // Render HTML for sub-chapters.
-        Ok(()) // Return Ok when rendering is complete.
+        Ok(())
     }
 
     fn render_index_html(&mut self) {
@@ -323,7 +323,7 @@ impl Builder {
 }
 
 // Create a new Builder instance and return Result<Builder, Box<dyn std::error::Error>>
-pub fn new_builder() -> Result<Builder, Box<dyn std::error::Error>> {
+pub fn new_builder() -> anyhow::Result<Builder> {
     let root = book::get_root()?; // Get root data from book module.
     let settings = book::get_settings()?; // Get settings from book module.
     let engine = Tera::new(
@@ -344,7 +344,7 @@ pub fn new_builder() -> Result<Builder, Box<dyn std::error::Error>> {
 }
 
 // Recursive function to copy directory contents
-fn copy_dir_recursive(from: &Path, to: &Path) -> io::Result<()> {
+fn copy_dir_recursive(from: &Path, to: &Path) -> anyhow::Result<()> {
     // Create target directory if it doesn't exist
     if !to.exists() {
         fs::create_dir_all(to)?;

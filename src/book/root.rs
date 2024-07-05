@@ -1,5 +1,5 @@
+use crate::error::Error;
 use serde::{Deserialize, Serialize};
-use std::error::Error;
 use std::fs;
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -26,10 +26,9 @@ pub struct SubChapter {
     pub path: String,
 }
 
-pub fn get_root() -> Result<Root, Box<dyn Error>> {
-    let content = fs::read_to_string("root.yml")
-        .map_err(|_| format!("The \"root.yml\" mapping file was not found"))?;
-    let root: Root = serde_yaml::from_str(&content)
-        .map_err(|_| format!("The \"root.yml\" content is not formatted properly"))?;
+pub fn get_root() -> anyhow::Result<Root> {
+    let content = fs::read_to_string("root.yml").map_err(|_| Error::RootFileNotFound)?;
+    let root: Root =
+        serde_yaml::from_str(&content).map_err(|_| Error::RootFileContentNotFormatted)?;
     Ok(root)
 }
