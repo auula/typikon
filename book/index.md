@@ -18,6 +18,9 @@ Typikon lets you use markdown to write your online books.
 
 ### Introduce
 
+<img src="https://img.ibyte.me/w3uchi.png" alt="Typikon Image"
+							style="float: left; margin: 0px 20px 10px 10px;height: 100px;" />
+
 Typikon name derived from [Typikon](https://en.wikipedia.org/wiki/Typikon) Book, the a static website rendering tool similar to mdbook and gitbook, but it focuses only on rendering markdown into an online book, and is easier to use than the other tools.
 
 ---
