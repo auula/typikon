@@ -1,13 +1,13 @@
 ## 快速入门
 
-如果想使用 typikon 程序，必须先将 typikon 程序安装到你的计算机中，安装过程中根据自己的计算机版本找到对应的二进制安装包，安装包可以再 [release](https://github.com/auula/typikon/releases) 页面中找到，并下载 typikon 的二进制压缩包到你计算机中。
+如果想使用 typikon 程序，必须先将 typikon 程序安装到你的计算机中，安装过程中根据自己的计算机版本找到对应的二进制安装包，安装包可以在 [release](https://github.com/auula/typikon/releases) 页面中找到，并下载 typikon 的二进制压缩包到你计算机中。
 
 > 在使用 typikon 程序之前请确保你计算机已经成功连接到国际互联网，如果是中国大陆地区可能会出现无法创建工作目录的情况，如果出现此类问题，可以尝试使用加速或者开启代理软件，再使用 typikon 进行目录初始化工作。
 
-当下载好 zip 二进制软件包后，请使用 `unzip` 或者其他解压软件来解压 `typikon-darwin-x64-beta-v0.1.1.zip` 软件包，命令如下：
+当下载好 zip 二进制软件包后，请使用 `unzip` 或者其他解压软件来解压 `typikon-macos-amd64.zip` 软件包，命令如下：
 
 ```shell
-unzip typikon-darwin-x64-beta-v0.1.1.zip -d /usr/local/bin
+unzip typikon-macos-amd64.zip -d /usr/local/bin
 chmod +x /usr/local/bin/typikon
 ```
 
@@ -24,15 +24,16 @@ export PATH=$TYPIKON:$PATH
 
 ## 快速开始
 
-在 typikon 程序中提供了 3 个子命令，分别为 `init` 用来初始化工作目录， `build` 用来构建生成静态文件， `help` 智能化子命令帮助信息提示，当 `typikon` 主程序运行起来后结果如下：
+在 typikon 程序中提供了 4 个子命令，分别为 `init` 用来初始化工作目录， `build` 用来构建生成静态文件，`serve` 用来启动静态 HTTP 服务器提供预览功能， `help` 智能化子命令帮助信息提示，当 `typikon` 主程序运行起来后结果如下：
 
 ```shell
 $: typikon
+
   _             _ _
  | |_ _  _ _ __(_) |_____ _ _
  |  _| || | '_ \ | / / _ \ ' \
   \__|\_, | .__/_|_\_\___/_||_|
-      |__/|_|     v0.1.1-beta
+      |__/|_|     v0.1.2
 
 Typikon lets you use markdown to write your online books.
 GitHub: http://typikonbook.github.io  License: Apache2.0
@@ -43,9 +44,11 @@ Usage: typikon <command> [<args>...]
 The commands are:
 
     init      Initialize to working directory
+    serve     Serve starting the static http server
     build     Builder static html file and output to book
 
 Use typikon help <command> for more information about a command.
+
 ```
 
 在编写你的书籍资料之前，需要一个干净的目录作为 `typikon` 的工作目录，执行以下命令可以创建新的目录并且初始化为工作目录：
@@ -141,3 +144,22 @@ Ready for changes
 ```
  
 访问 `http://127.0.0.1:8080` 就可以预览到网站。
+
+---
+
+## 内置服务
+
+在新版本 `v0.1.2` 版本之后已经内置了 HTTP 静态服务器，可以提供预览功能，使用 `serve` 目录就可以启动静态 HTTP 服务器，默认监听端口为 `2478` ，浏览器访问 `http://127.0.0.1:2478` ：
+
+```shell
+  _             _ _
+ | |_ _  _ _ __(_) |_____ _ _
+ |  _| || | '_ \ | / / _ \ ' \
+  \__|\_, | .__/_|_\_\___/_||_|
+      |__/|_|     v0.1.2
+
+Typikon lets you use markdown to write your online books.
+GitHub: http://typikonbook.github.io  License: Apache2.0
+
+[INFO]   2024/07/08 14:32:04 💬 Starting HTTP server on port 2478
+```

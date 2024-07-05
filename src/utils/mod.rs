@@ -1,4 +1,4 @@
-pub mod logger;
-pub use logger::*;
+pub mod log;
+pub use log::*;
 pub mod file;
 pub use file::*;

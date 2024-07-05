@@ -16,6 +16,9 @@ Typikon 让您可以使用 Markdown 编写您的在线书籍。
 
 ### 介 绍
 
+<img src="https://img.ibyte.me/e13bbi.png" alt="Typikon Image"
+							style="float: left; margin: 0px 20px 10px 10px;height: 100px;" />
+
 Typikon 的名字源自 [Typikon](https://en.wikipedia.org/wiki/Typikon) 书籍，它是一个类似于 mdbook 和 gitbook 的静态网站渲染工具，但它专注于将 Markdown 渲染成在线书籍，比其他工具更易于使用。
 
 ---

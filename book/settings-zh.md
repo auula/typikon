@@ -3,13 +3,27 @@
 在 `settings.yml` 文件中存储是 typikon 程序默认配置文件，可以设置 typikon 渲染出来的静态网站元数据信息，例如方便 SEO 优化的 `description` 和 `keywords` 字段，`title` 用来设置书名，其他字段用于设置作者信息。
 
 ```yaml
-settings:
-  about:
-    title: Typikon Book
-    author: Leon Ding
-    description: Typikon name derived from Typikon Book, the a static website rendering tool similar to mdbook and hugo, but it focuses only on rendering markdown into an online book, and is easier to use than the other tools.
-    language: en
-    keywords: typikon,book,website,generator,static,html,css,js,theme,rust
+title: Typikon Book
+author: Leon Ding
+description: >
+  Typikon name derived from Typikon Book, the a static website rendering tool
+  similar to mdbook and hugo, but it focuses only on rendering markdown into
+  an online book, and is easier to use than the other tools.
+language: en
+keywords: 'typikon,book,website,generator,static,html,css,js,theme,rust'
+directory:
+  theme: theme
+  input: book
+  output: docs
+icon: ''
+port: 2478
+theme: typikon-theme
+custom_css:
+  - /assets/css/bootstrap.min.css
+  - /assets/typikon.css
+custom_js:
+  - /assets/js/bootstrap.min.js
+  - /assets/js/bootstrap.bundle.js
 ```
 
 在 `directory` 节点下可以设置默认，数据文件存储位置的目录和文件夹，必须是当前目录下的，可以配置目录映射关系：
@@ -21,8 +35,7 @@ settings:
     output: docs
 ```
 
-
-> 所有字段必须都是 `settings` 字段子节点。 
+ 
 
 ---
 

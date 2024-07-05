@@ -1,9 +1,8 @@
-use serde::{Deserialize, Serialize}; // Importing serde attributes.
+use serde::{Deserialize, Serialize};
 
 use crate::{
-    // Importing modules from the crate.
-    book::{self, About, SubChapter}, // Importing structs About and SubChapter from book module.
-    utils,                           // Importing utils module.
+    book::{self, Settings, SubChapter},
+    utils,
 };
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -16,52 +15,53 @@ pub struct Chapter {
 // Template struct for HTML template and data to be rendered
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Template {
-    pub title: String,          // Title of the template.
-    pub keywords: String,       // Keywords for SEO.
-    pub description: String,    // Description for SEO.
-    pub chapters: Vec<Chapter>, // List of chapters.
-    pub language: String,
+    pub name: String,
+    pub keywords: String,
+    pub html_lang: String,
+    pub description: String,
+    pub chapters: Vec<Chapter>,
+    pub custom_js: Vec<String>,
+    pub custom_css: Vec<String>,
 }
 
 impl Template {
     // Constructor method to create a new Template instance
-    pub fn new(about: &About, chapters: &Vec<book::Chapter>) -> Template {
-        let mut new_chapters: Vec<Chapter> = Vec::new(); // Initialize empty vector for chapters.
+    pub fn new(settings: &Settings, chapters: &[book::Chapter]) -> Template {
+        let mut new_chapters = Vec::new();
 
         // Format chapters
         chapters.iter().for_each(|chapter| {
-            let mut new_sub_chapters: Vec<SubChapter> = Vec::new(); // Initialize empty vector for sub-chapters.
+            let mut new_sub_chapters = Vec::new();
 
             // Format sub-chapters
             chapter.sub_chapters.iter().for_each(|sub_chapter| {
-                let sub_chapter_path = utils::remove_md_extension(&sub_chapter.path) // Remove Markdown extension and format path.
-                    .replace(" ", "-") // Replace spaces with hyphens.
-                    .to_lowercase(); // Convert to lowercase.
+                let sub_chapter_path = utils::remove_md_extension(&sub_chapter.path)
+                    .replace(' ', "-")
+                    .to_lowercase();
 
                 new_sub_chapters.push(SubChapter {
-                    title: sub_chapter.title.clone(), // Clone title of sub-chapter.
-                    path: sub_chapter_path,           // Assign formatted path.
+                    title: sub_chapter.title.clone(),
+                    path: sub_chapter_path,
                 });
             });
 
-            // Format main chapter
-            let chapter = Chapter {
-                title: chapter.title.clone(), // Clone title of chapter.
-                path: utils::remove_md_extension(&chapter.index) // Remove Markdown extension and format path.
-                    .replace(" ", "-") // Replace spaces with hyphens.
-                    .to_lowercase(), // Convert to lowercase.
-                sub_chapters: new_sub_chapters, // Assign formatted sub-chapters.
-            };
-
-            new_chapters.push(chapter); // Push formatted chapter to new_chapters vector.
+            new_chapters.push(Chapter {
+                title: chapter.title.clone(),
+                path: utils::remove_md_extension(&chapter.path)
+                    .replace(' ', "-")
+                    .to_lowercase(),
+                sub_chapters: new_sub_chapters,
+            });
         });
 
-        Template {
-            chapters: new_chapters,                 // Assign formatted chapters.
-            title: about.title.clone(),             // Clone title of about section.
-            keywords: about.keywords.clone(),       // Clone keywords for SEO.
-            language: about.language.clone(),       // Initialize content as empty string.
-            description: about.description.clone(), // Clone description for SEO.
+        Self {
+            chapters: new_chapters,
+            name: settings.title.clone(),
+            keywords: settings.keywords.clone(),
+            html_lang: settings.language.clone(),
+            custom_js: settings.custom_js.clone(),
+            custom_css: settings.custom_css.clone(),
+            description: settings.description.clone(),
         }
     }
 }

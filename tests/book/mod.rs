@@ -1,7 +1,5 @@
 use std::{fs, io, path::Path};
 
-pub mod builder_test;
-pub mod root_test;
 pub mod settings_test;
 
 pub fn read_file_contents(path: &Path) -> Result<String, io::Error> {
