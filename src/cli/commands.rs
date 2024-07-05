@@ -6,10 +6,9 @@ use std::path::Path;
 use std::str::FromStr;
 use std::sync::Mutex;
 
+use super::print_banner;
 use crate::utils::Logger;
 use crate::{book, utils};
-
-use super::print_banner;
 
 #[derive(Eq, Hash, PartialEq, Debug)]
 pub enum Command {

@@ -34,7 +34,7 @@ pub struct InnerSettings {
 
 pub fn get_settings() -> anyhow::Result<Settings> {
     let content = fs::read_to_string("settings.yml").map_err(|_| Error::RootFileNotFound)?;
-    let settings: Settings =
+    let settings =
         serde_yaml::from_str(&content).map_err(|_| Error::RootFileContentNotFormatted)?;
     Ok(settings)
 }

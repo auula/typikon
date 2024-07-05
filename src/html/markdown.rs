@@ -1,10 +1,6 @@
 use pulldown_cmark::{html, Options, Parser};
 use serde::{Deserialize, Serialize};
-use std::{
-    fs::File,
-    io::{self, Read},
-    path::Path,
-};
+use std::{fs::File, io::Read, path::Path};
 
 // Define the Markdown type
 #[derive(Debug, Serialize, Deserialize)]
@@ -12,8 +8,8 @@ pub struct Markdown(String);
 
 impl Markdown {
     // Create a new Markdown instance from a string slice
-    pub fn new(content: &str) -> Markdown {
-        Markdown(content.to_string())
+    pub fn new(content: impl Into<String>) -> Markdown {
+        Self(content.into())
     }
 
     // Convert Markdown to HTML
@@ -35,10 +31,9 @@ impl Markdown {
 }
 
 // Read Markdown content from a file
-pub fn from_markdown(path: &Path) -> io::Result<Markdown> {
+pub fn from_markdown(path: &Path) -> anyhow::Result<Markdown> {
     let mut file = File::open(path)?;
     let mut content = String::new();
     file.read_to_string(&mut content)?;
     Ok(Markdown(content))
 }
-

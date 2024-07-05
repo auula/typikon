@@ -17,6 +17,10 @@ pub struct Builder {
 }
 
 impl Builder {
+    pub fn get_root_output(&self) -> String {
+        self.settings.settings.directory.output.clone()
+    }
+
     // Render the entire book
     pub fn render(&mut self) -> anyhow::Result<()> {
         cli::print_banner(); // Printing CLI banner.
@@ -32,7 +36,7 @@ impl Builder {
         let mut log = Logger::console_log(); // Initialize console logger.
         let template = Template::new(&self.settings.settings.about, &self.root.root.chapters); // Create a new Template instance.
 
-        let root = &self.settings.settings.directory.source.clone();
+        let root = self.get_root_output();
         let base_path = Path::new(&root);
         let index_file = base_path.join(&self.root.root.index);
 
@@ -43,7 +47,7 @@ impl Builder {
                 let hypertext = Hypertext::new(
                     "Index File",
                     &index_file.display().to_string(),
-                    Markdown::new(&markdown_content),
+                    Markdown::new(markdown_content),
                 );
 
                 // Create context and add data
@@ -60,7 +64,7 @@ impl Builder {
                 // Render template
                 let rendered = self.engine.render("index.html", &context).unwrap();
 
-                let out_root = &self.settings.settings.directory.output.clone(); // Get the root directory path.
+                let out_root = self.get_root_output(); // Get the root directory path.
                 let out_base_path = Path::new(&out_root);
 
                 let index_chapter_file = out_base_path.join("index.html");
@@ -83,7 +87,7 @@ impl Builder {
         let mut log = Logger::console_log(); // Initialize console logger.
         let template = Template::new(&self.settings.settings.about, &self.root.root.chapters); // Create a new Template instance.
 
-        let root = &self.settings.settings.directory.output.clone(); // Get the root directory path.
+        let root = self.get_root_output(); // Get the root directory path.
         let base_path = Path::new(&root); // Create a Path instance for the root directory.
 
         let sub_chapters_html = self.sub_chapters_html(); // Get HTML content for sub-chapters.
@@ -134,7 +138,7 @@ impl Builder {
     fn render_chapter_html(&mut self) {
         let mut log = Logger::console_log(); // Initialize console logger.
         let template = Template::new(&self.settings.settings.about, &self.root.root.chapters); // Create a new Template instance.
-        let root = &self.settings.settings.directory.output.clone(); // Get the root directory path.
+        let root = self.get_root_output(); // Get the root directory path.
         let base_path = Path::new(&root); // Create a Path instance for the root directory.
 
         let chapters_html: HashMap<String, Hypertext> = self.chapters_html(); // Get HTML content for chapters.

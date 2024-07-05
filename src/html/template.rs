@@ -26,7 +26,7 @@ pub struct Template {
 impl Template {
     // Constructor method to create a new Template instance
     pub fn new(about: &About, chapters: &[book::Chapter]) -> Template {
-        let mut new_chapters: Vec<Chapter> = Vec::new(); // Initialize empty vector for chapters.
+        let mut new_chapters = Vec::new(); // Initialize empty vector for chapters.
 
         // Format chapters
         chapters.iter().for_each(|chapter| {
@@ -44,16 +44,13 @@ impl Template {
                 });
             });
 
-            // Format main chapter
-            let chapter = Chapter {
+            new_chapters.push(Chapter {
                 title: chapter.title.clone(), // Clone title of chapter.
                 path: utils::remove_md_extension(&chapter.index) // Remove Markdown extension and format path.
                     .replace(' ', "-") // Replace spaces with hyphens.
                     .to_lowercase(), // Convert to lowercase.
                 sub_chapters: new_sub_chapters, // Assign formatted sub-chapters.
-            };
-
-            new_chapters.push(chapter); // Push formatted chapter to new_chapters vector.
+            }); // Push formatted chapter to new_chapters vector.
         });
 
         Self {

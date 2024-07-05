@@ -28,7 +28,6 @@ pub struct SubChapter {
 
 pub fn get_root() -> anyhow::Result<Root> {
     let content = fs::read_to_string("root.yml").map_err(|_| Error::RootFileNotFound)?;
-    let root: Root =
-        serde_yaml::from_str(&content).map_err(|_| Error::RootFileContentNotFormatted)?;
+    let root = serde_yaml::from_str(&content).map_err(|_| Error::RootFileContentNotFormatted)?;
     Ok(root)
 }
