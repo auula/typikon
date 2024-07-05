@@ -21,11 +21,11 @@ pub fn download_zip() -> Result<(), Box<dyn std::error::Error>> {
     let extract_path = Path::new(".");
 
     let mut response = get(repo_url)?;
-    let mut out = File::create(&zip_path)?;
+    let mut out = File::create(zip_path)?;
     copy(&mut response, &mut out)?;
-    let zip_file = File::open(&zip_path)?;
+    let zip_file = File::open(zip_path)?;
     let mut archive = ZipArchive::new(zip_file)?;
-    archive.extract(&extract_path)?;
+    archive.extract(extract_path)?;
 
     Ok(())
 }

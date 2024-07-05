@@ -66,7 +66,7 @@ impl Builder {
                 let index_chapter_file = out_base_path.join("index.html");
 
                 // Write to file /chapter2/chapter_1.1.1.html
-                match fs::write(&index_chapter_file.display().to_string(), &rendered) {
+                match fs::write(index_chapter_file.display().to_string(), rendered) {
                     Ok(_) => log.info(format_args!(
                         "Data written to file {:?} successful",
                         index_chapter_file
@@ -92,7 +92,7 @@ impl Builder {
         for (chapter_title, html_chapters) in sub_chapters_html.iter() {
             for html_content in html_chapters.iter() {
                 // Generate full file path
-                let chapter_dir = base_path.join(&chapter_title.replace(" ", "-").to_lowercase());
+                let chapter_dir = base_path.join(&chapter_title.replace(' ', "-").to_lowercase());
 
                 // Create context and add data
                 let mut context = Context::new();
@@ -111,7 +111,7 @@ impl Builder {
                 // Write to file /chapter2/chapter_1.1.1.md => /chapter2/chapter_1.1.1
                 let sub_chapter_file = chapter_dir.join(
                     utils::remove_md_extension(&html_content.path)
-                        .replace(" ", "-")
+                        .replace(' ', "-")
                         .to_lowercase(),
                 );
 
@@ -141,7 +141,7 @@ impl Builder {
 
         // Iterate over chapters and their HTML content
         for (chapter_title, html_content) in chapters_html.iter() {
-            let chapter_dir = base_path.join(&chapter_title.replace(" ", "-").to_lowercase());
+            let chapter_dir = base_path.join(&chapter_title.replace(' ', "-").to_lowercase());
             let chapter_file = chapter_dir.join("index.html");
 
             // Create directory
@@ -255,7 +255,7 @@ impl Builder {
 
                         // Insert into result HashMap
                         result.insert(
-                            utils::remove_md_extension(&chapter.index.as_str()),
+                            utils::remove_md_extension(chapter.index.as_str()),
                             hypertext,
                         );
 
@@ -312,7 +312,7 @@ impl Builder {
 
                 // Insert sub-chapters into result HashMap
                 result.insert(
-                    utils::remove_md_extension(&chapter.index.as_str()),
+                    utils::remove_md_extension(chapter.index.as_str()),
                     chapter_hypertexts,
                 );
             }

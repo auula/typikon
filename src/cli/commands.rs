@@ -3,6 +3,7 @@ use core::fmt;
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use std::path::Path;
+use std::str::FromStr;
 use std::sync::Mutex;
 
 use crate::utils::Logger;
@@ -18,14 +19,17 @@ pub enum Command {
     Unknown(String),
 }
 
-impl Command {
-    pub fn from_str(s: &str) -> Command {
-        match s {
+impl FromStr for Command {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let ret = match s {
             "build" => Command::Build,
             "init" => Command::Init,
             "help" => Command::Help,
             _ => Command::Unknown(s.to_string()),
-        }
+        };
+        Ok(ret)
     }
 }
 
@@ -45,7 +49,7 @@ const BUILD_HELP_TEXT: &str = r"
 	Example:
 
 	The construction of static html files must be done in the working directory 👇
-    
+
 	$: cd example && typikon build
 
 ";
@@ -55,7 +59,7 @@ const INIT_HELP_TEXT: &str = r"
 	Example:
 
 	Specify the initialization working directory 👇
-    
+
 	$: mkdir example && cd example && typikon init
 
 ";
@@ -72,17 +76,22 @@ static HELP_INFO: Lazy<Mutex<HashMap<Command, colored::ColoredString>>> = Lazy::
 // 通过命令行传入的 args 参数打印 help 信息
 pub fn handle_help_command(args: &[String]) {
     let mut log = Logger::console_log();
-    if let Some(option) = args.get(0) {
+    if let Some(option) = args.first() {
         let help = HELP_INFO.lock().unwrap();
         match Command::from_str(option) {
-            Command::Build | Command::Init | Command::Help => {
-                if let Some(help_text) = help.get(&Command::from_str(option)) {
+            Ok(Command::Build) | Ok(Command::Init) | Ok(Command::Help) => {
+                if let Some(help_text) = help.get(&Command::from_str(option).expect("NEVER Failed"))
+                {
                     println!("{}", help_text);
                 } else {
                     log.error(format_args!("No help available for command: {}", option))
                 }
             }
-            Command::Unknown(_) => log.error(format_args!(
+            Ok(Command::Unknown(_)) => log.error(format_args!(
+                "Unknown option: <{}> Available option: [init,build]",
+                option
+            )),
+            Err(_) => log.error(format_args!(
                 "Unknown option: <{}> Available option: [init,build]",
                 option
             )),
@@ -103,7 +112,7 @@ pub fn handle_init_command(_args: &[String]) {
         log.error(format_args!("{:?}", err));
     }
 
-    if let Err(err) = utils::move_dir_contents(&&Path::new("typikon-book-main"), &Path::new(".")) {
+    if let Err(err) = utils::move_dir_contents(Path::new("typikon-book-main"), Path::new(".")) {
         log.error(format_args!("{:?}", err));
     }
 
