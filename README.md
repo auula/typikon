@@ -32,11 +32,18 @@ Typikon name derived from [Typikon](https://en.wikipedia.org/wiki/Typikon) Book,
 
 To learn how to use the `Typikon` program, you can refer to the documentation that I have written. This documentation is generally rendered and built using Typikon. The online documentation can be accessed at the following address: [https://typikonbook.github.io](https://typikonbook.github.io) 🌟.
 
+---
+
+## Stargazers over time
+
+[![Stargazers over time](https://starchart.cc/auula/typikon.svg?variant=adaptive)](https://starchart.cc/auula/typikon)
 
 ---
 
-## WeChat
+## WeChat Group
 
-<img src="https://github.com/auula/typikon/assets/38412458/1eac857f-0309-404d-a8f9-f92dd1606677" alt="Alt text" style="width: 400px; height: 600px;">
+> 中国大陆用户可以加微信群一起讨论设计与代码实现细节。
+
+<img src="https://github.com/auula/typikon/assets/38412458/1eac857f-0309-404d-a8f9-f92dd1606677" alt="Alt text" style="width: 180px; height: 260px;">
 
 
