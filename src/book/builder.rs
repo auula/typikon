@@ -17,7 +17,6 @@ pub struct Builder {
 }
 
 impl Builder {
-
     // Render the entire book
     pub fn render(&mut self) -> anyhow::Result<()> {
         cli::print_banner(); // Printing CLI banner.
@@ -28,7 +27,6 @@ impl Builder {
         self.render_sub_chapter_html(); // Render HTML for sub-chapters.
         Ok(())
     }
-
 
     fn render_index_html(&mut self) {
         let mut log = Logger::console_log(); // Initialize console logger.
