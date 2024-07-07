@@ -1,11 +1,6 @@
-use std::{env, process::exit};
-
 use colored::Colorize;
-use std::str::FromStr;
 
-use super::Command;
-
-const BANNER: &str = r"
+pub const BANNER: &str = r"
   _             _ _
  | |_ _  _ _ __(_) |_____ _ _
  |  _| || | '_ \ | / / _ \ ' \
@@ -39,23 +34,4 @@ pub fn print_banner_help() {
 
 pub fn print_banner() {
     println!("{}", BANNER.replace("{}", VERSION).as_str().purple())
-}
-
-// Analyze the parameters input in the command line,
-// return the Command enumeration and parameters other than the command itself
-pub fn parse_args() -> (Command, Vec<String>) {
-    let args: Vec<String> = env::args().collect();
-
-    if args.len() < 2 {
-        print_banner_help();
-        exit(0)
-    }
-
-    let cmd = args[1].clone();
-    let params = args[2..].to_vec();
-
-    (
-        Command::from_str(cmd.as_str()).expect("NEVER Failed"),
-        params,
-    )
 }
