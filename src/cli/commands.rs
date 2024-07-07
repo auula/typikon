@@ -1,12 +1,11 @@
+use super::print_banner;
 use crate::cli::BANNER;
+use crate::utils::Logger;
+use crate::{book, utils};
 use clap::{ColorChoice, Parser};
 use core::fmt;
 use std::fmt::Display;
 use std::path::Path;
-
-use super::print_banner;
-use crate::utils::Logger;
-use crate::{book, utils};
 
 #[derive(Parser, Debug, Eq, Hash, PartialEq)]
 #[clap(name = "Typikon", version = "0.1.1-beta", author = "Typikon")]
