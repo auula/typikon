@@ -19,3 +19,4 @@ custom_css:
 custom_js:
   - /assets/js/bootstrap.min.js
   - /assets/js/bootstrap.bundle.js
+  - /assets/js/fuse.min.js

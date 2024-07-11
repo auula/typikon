@@ -32,7 +32,19 @@
 						class="d-flex align-items-center justify-content-center pb-3 mb-3 link-body-emphasis text-decoration-none border-bottom">
 						<span class="fs-4 fw-semibold">{{ title }}</span>
 					</a>
-					<ul class="list-unstyled ps-0">
+					<div class="input-group mb-3 pb-3 border-bottom">
+						<span class="input-group-text" id="basic-addon1">
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+								class="bi bi-search" viewBox="0 0 16 16">
+								<path
+									d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0">
+								</path>
+							</svg>
+						</span>
+						<input type="text" class="form-control" id="serach-text" placeholder="Full text serach..."
+							aria-describedby="basic-addon1">
+					</div>
+					<ul class="list-unstyled ps-0" id="chapterList">
 						{% for chapter in chapters %}
 						<li class="mb-1">
 							<a class="btn d-inline-flex align-items-center rounded border-0"
@@ -95,8 +107,13 @@
 	{% endfor %}
 
 	<script>
-		document.addEventListener('DOMContentLoaded', (event) => {
+		document.addEventListener('DOMContentLoaded', initTheme);
+		window.onload = () => {
+			themeChange();
+			fullTextSearch();
+		};
 
+		function initTheme(event) {
 			const darkThemeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 			const lightThemeLink = document.getElementById('light-theme');
 			const darkThemeLink = document.getElementById('dark-theme');
@@ -120,12 +137,11 @@
 			darkThemeMediaQuery.addListener(changeTheme);
 
 
-			// 初始化 highlight.js
+			// Initial highlight.js
 			document.querySelectorAll('pre code').forEach((block) => {
 				hljs.highlightElement(block);
 			});
 
-			// 添加自定义 md-p 样式
 			var markdownContent = document.getElementById('markdown-content');
 			if (markdownContent) {
 				var paragraphs = markdownContent.querySelectorAll('p');
@@ -133,15 +149,46 @@
 					paragraph.classList.add('md-p');
 				});
 			}
+		};
 
-		});
+		function fullTextSearch() {
+			// Full text search data
+			const data = [
+				{ id: '1', title: '示例文档一', content: '这是示例文档一的内容。' },
+				{ id: '2', title: '示例文档二', content: '这是示例文档二的内容。' }
+			];
 
-		// 监听系统主题切换操作
-		window.onload = () => {
+			// Fuse.js options
+			const options = {
+				keys: ['title', 'content'],
+				includeScore: true,
+				tokenize: true,
+				threshold: 0.3,
+				tokenSeparator: /[,|，|。]/
+			};
+
+			const fuse = new Fuse(data, options);
+			const chapterList = document.getElementById('chapterList');
+
+			function performSearch() {
+				const query = document.getElementById('serach-text').value.trim();
+				const results = fuse.search(query);
+
+				chapterList.style.display = query !== '' ? 'none' : 'block';
+
+				results.forEach(result => {
+					console.log(`${result.item.title} - ${result.item.content}`);
+				});
+			};
+
+			const search_text_input = document.getElementById("serach-text");
+			search_text_input.addEventListener("input", performSearch);
+		};
+
+		function themeChange() {
 			const darkThemeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 			const lightThemeLink = document.getElementById('light-theme');
 			const darkThemeLink = document.getElementById('dark-theme');
-
 			changeTheme = (mediaQuery) => {
 				if (mediaQuery.matches) {
 					// Dark mode
@@ -153,15 +200,12 @@
 					lightThemeLink.removeAttribute('disabled');
 				}
 			};
-
 			// Initial check
 			changeTheme(darkThemeMediaQuery);
-
 			// Listen for changes in OS theme
 			darkThemeMediaQuery.addListener(changeTheme);
 		};
 	</script>
-
 </body>
 
 </html>
