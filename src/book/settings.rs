@@ -15,6 +15,7 @@ pub struct Settings {
     pub keywords: String,
     pub description: String,
     pub directory: Directory,
+    pub highlight: Vec<String>,
     pub custom_js: Vec<String>,
     pub custom_css: Vec<String>,
 }

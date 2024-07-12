@@ -4,7 +4,6 @@ mod tests {
 
     use typikon::book::get_settings_from_file;
 
-
     #[test]
     fn test_get_settings() {
         // Write a simple settings YAML string for testing
@@ -25,6 +24,11 @@ mod tests {
                 - "custom.js"
             custom_css:
                 - "custom.css"
+            highlight:
+                - c
+                - cpp
+                - java
+                - rust  
         "#;
 
         // Write the YAML string to a temporary file for the test
@@ -53,5 +57,6 @@ mod tests {
         assert_eq!(settings.directory.output, "output/");
         assert_eq!(settings.custom_js, vec!["custom.js"]);
         assert_eq!(settings.custom_css, vec!["custom.css"]);
+        assert_eq!(settings.highlight, vec!["c", "cpp", "java", "rust"]);
     }
 }

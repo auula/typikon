@@ -41,8 +41,8 @@ code {
 }
 
 blockquote {
+    border-radius: 5px;
     background-color: #333333;
-    /* Darker background for blockquotes */
     border-left: 5px solid #ccc;
     padding: 10px;
     margin-left: 0;
@@ -89,6 +89,15 @@ hr {
     margin: 20px 0;
     border-color: #555;
     /* Color for dashed horizontal rule */
+}
+
+.md-p {
+    display: block;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    unicode-bidi: isolate;
 }
 
 .hljs-ln {
@@ -162,7 +171,6 @@ hr {
 }
 
 /* 鼠标悬停灰色 */
-
 .col-md-4 a.d-inline-flex:hover,
 .col-md-4 a.d-inline-flex:focus {
     color: #e0e0e0;
@@ -194,7 +202,6 @@ hr {
     margin-inline-end: 0px;
     unicode-bidi: isolate;
 }
-
 
 /* 目录菜单悬浮 */
 .col-md-4 {

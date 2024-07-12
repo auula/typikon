@@ -80,27 +80,10 @@
 	</div>
 
 	<script src="/assets/highlight/highlight.min.js"></script>
-	<script src="/assets/highlight/languages/shell.min.js"></script>
-	<script src="/assets/highlight/languages/sql.min.js"></script>
-	<script src="/assets/highlight/languages/java.min.js"></script>
-	<script src="/assets/highlight/languages/rust.min.js"></script>
-	<script src="/assets/highlight/languages/javascript.min.js"></script>
-	<script src="/assets/highlight/languages/c.min.js"></script>
-	<script src="/assets/highlight/languages/cpp.min.js"></script>
-	<script src="/assets/highlight/languages/kotlin.min.js"></script>
-	<script src="/assets/highlight/languages/rust.min.js"></script>
-	<script src="/assets/highlight/languages/python.min.js"></script>
-	<script src="/assets/highlight/languages/csharp.min.js"></script>
-	<script src="/assets/highlight/languages/css.min.js"></script>
-	<script src="/assets/highlight/languages/swift.min.js"></script>
-	<script src="/assets/highlight/languages/xml.min.js"></script>
-	<script src="/assets/highlight/languages/yaml.min.js"></script>
-	<script src="/assets/highlight/languages/ruby.min.js"></script>
-	<script src="/assets/highlight/languages/php.min.js"></script>
-	<script src="/assets/highlight/languages/go.min.js"></script>
-	<script src="/assets/highlight/languages/dart.min.js"></script>
-	<script src="/assets/highlight/languages/bash.min.js"></script>
-	<script src="/assets/highlight/languages/dockerfile.min.js"></script>
+
+	{% for lang_path in highlight %}
+	<script src="/assets/highlight/languages/{{ lang_path }}.min.js"></script>
+	{% endfor %}
 
 	{% for js_path in custom_js %}
 	<script src="{{ js_path | safe }}"></script>
@@ -136,7 +119,6 @@
 			// Listen for changes in OS theme
 			darkThemeMediaQuery.addListener(changeTheme);
 
-
 			// Initial highlight.js
 			document.querySelectorAll('pre code').forEach((block) => {
 				hljs.highlightElement(block);
@@ -145,7 +127,7 @@
 			var markdownContent = document.getElementById('markdown-content');
 			if (markdownContent) {
 				var paragraphs = markdownContent.querySelectorAll('p');
-				paragraphs.forEach(function (paragraph) {
+				paragraphs.forEach((paragraph) => {
 					paragraph.classList.add('md-p');
 				});
 			}
@@ -181,8 +163,8 @@
 				});
 			};
 
-			const search_text_input = document.getElementById("serach-text");
-			search_text_input.addEventListener("input", performSearch);
+			const searchInput = document.getElementById("serach-text");
+			searchInput.addEventListener("input", performSearch);
 		};
 
 		function themeChange() {

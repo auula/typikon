@@ -5,7 +5,7 @@ description: >
   similar to mdbook and hugo, but it focuses only on rendering markdown into
   an online book, and is easier to use than the other tools.
 language: en
-keywords: 'typikon,book,website,generator,static,html,css,js,theme,rust'
+keywords: typikon,book,website,generator,static,html,css,js,theme,rust
 directory:
   theme: theme
   input: book
@@ -20,3 +20,15 @@ custom_js:
   - /assets/js/bootstrap.min.js
   - /assets/js/bootstrap.bundle.js
   - /assets/js/fuse.min.js
+highlight:
+  - c
+  - java
+  - rust
+  - cpp
+  - kotlin
+  - python
+  - csharp
+  - css
+  - swift
+  - bash
+  - javascript

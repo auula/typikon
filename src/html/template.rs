@@ -21,6 +21,7 @@ pub struct Template {
     pub html_lang: String,
     pub description: String,
     pub chapters: Vec<Chapter>,
+    pub highlight: Vec<String>,
     pub custom_js: Vec<String>,
     pub custom_css: Vec<String>,
 }
@@ -61,6 +62,7 @@ impl Template {
             icon: settings.icon.clone(),
             keywords: settings.keywords.clone(),
             html_lang: settings.language.clone(),
+            highlight: settings.highlight.clone(),
             custom_js: settings.custom_js.clone(),
             custom_css: settings.custom_css.clone(),
             description: settings.description.clone(),

@@ -112,6 +112,7 @@ impl Builder {
                 context.insert("chapters", &template.chapters);
                 context.insert("custom_js", &template.custom_js);
                 context.insert("custom_css", &template.custom_css);
+                context.insert("highlight", &template.highlight);
                 context.insert("description", &template.description);
                 context.insert("content", &hypertext.to_html());
 
@@ -160,6 +161,7 @@ impl Builder {
                 context.insert("chapters", &template.chapters);
                 context.insert("custom_js", &template.custom_js);
                 context.insert("custom_css", &template.custom_css);
+                context.insert("highlight", &template.highlight);
                 context.insert("description", &template.description);
                 context.insert("content", &html_content.to_html());
 
@@ -215,6 +217,7 @@ impl Builder {
             context.insert("chapters", &template.chapters);
             context.insert("custom_js", &template.custom_js);
             context.insert("custom_css", &template.custom_css);
+            context.insert("highlight", &template.highlight);
             context.insert("description", &template.description);
             context.insert("content", &html_content.to_html());
 
