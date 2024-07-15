@@ -91,3 +91,21 @@ pub fn delete_folder(folder_path: &Path) -> io::Result<()> {
     }
     Ok(())
 }
+
+pub fn remove_output_path_prefix(output_path: &str, file_path: &str) -> String {
+    let output_path = Path::new(output_path);
+    let file_path = Path::new(file_path);
+
+    // Ensure both paths are absolute to handle any path normalization issues
+    let output_path = output_path.canonicalize().unwrap();
+    let file_path = file_path.canonicalize().unwrap();
+
+    // If the file path is within the output path, remove the prefix
+    if file_path.starts_with(&output_path) {
+        let relative_path = file_path.strip_prefix(&output_path).unwrap();
+        return relative_path.to_string_lossy().to_string();
+    }
+
+    // If not, return the original file path
+    file_path.to_string_lossy().to_string()
+}

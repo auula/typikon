@@ -4,7 +4,6 @@ mod tests {
 
     use typikon::book::get_root_from_file;
 
-
     #[test]
     fn test_get_root() {
         // Write a simple root YAML string for testing

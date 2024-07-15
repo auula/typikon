@@ -89,7 +89,7 @@ static HELP_INFO: Lazy<Mutex<HashMap<Command, colored::ColoredString>>> = Lazy::
 pub fn handle_build_command(_args: &[String]) {
     let mut log = Logger::console_log();
     match book::new_builder() {
-        Ok(builder) => match builder.generate_books() {
+        Ok(mut builder) => match builder.generate_books() {
             Ok(_) => log.info(format_args!(
                 "Rendering of static resource files complete 🎉"
             )),

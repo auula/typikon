@@ -1,19 +1,27 @@
 use tera::{Context, Tera};
 
 use crate::{
+    book::data::Document,
     cli,
     html::{self, Hypertext, Markdown, Template},
     utils::{self, Logger},
 };
 
 use super::{root, settings, Root, Settings};
-use std::{collections::HashMap, fs, io, path::Path};
+use std::{
+    collections::HashMap,
+    fs::{self, File},
+    io::{self, Write},
+    path::Path,
+};
 
 #[derive(Debug)]
 pub struct Builder {
     pub engine: Tera,
     pub root: Root,
     pub settings: Settings,
+    pub document_index: i32,
+    pub search_data: Vec<Document>,
 }
 
 pub fn new_builder() -> Result<Builder, Box<dyn std::error::Error>> {
@@ -33,17 +41,29 @@ pub fn new_builder() -> Result<Builder, Box<dyn std::error::Error>> {
         engine,
         root,
         settings,
+        document_index: 0,
+        search_data: Vec::new(),
     })
 }
 
 impl Builder {
-    pub fn generate_books(&self) -> io::Result<()> {
+    pub fn generate_books(&mut self) -> io::Result<()> {
         cli::ouput_banner();
         self.create_workspace();
         self.copy_theme_assets();
         self.render_index_html();
         self.render_chapter_html();
         self.render_sub_chapter_html();
+        self.save_data_json()?;
+        Ok(())
+    }
+
+    fn save_data_json(&self) -> std::io::Result<()> {
+        let json_data = serde_json::to_string_pretty(&self.search_data)?;
+        let out_root_path = &self.settings.get_output_path();
+        let data_json_path = Path::new(out_root_path).join("data.json");
+        let mut file = File::create(data_json_path)?;
+        file.write_all(json_data.as_bytes())?;
         Ok(())
     }
 
@@ -87,7 +107,7 @@ impl Builder {
         ));
     }
 
-    fn render_index_html(&self) {
+    fn render_index_html(&mut self) {
         let mut log = Logger::console_log(); // initialize console logger.
         let template = Template::new(&self.settings, &self.root.get_chapters());
 
@@ -99,7 +119,7 @@ impl Builder {
             Ok(markdown_content) => {
                 // create Hypertext instance
                 let hypertext = Hypertext::new(
-                    "index.html",
+                    &template.name,
                     &index_file.display().to_string(),
                     Markdown::new(markdown_content),
                 );
@@ -124,6 +144,15 @@ impl Builder {
 
                 let index_chapter_file = out_base_path.join("index.html");
 
+                // push full text search data
+                self.document_index += 1;
+                let _ = &mut self.search_data.push(Document::new(
+                    self.document_index,
+                    "/index.html".to_string(),
+                    template.name,
+                    hypertext.to_html(),
+                ));
+
                 // write to file /chapter2/chapter_1.1.1.html
                 match fs::write(index_chapter_file.display().to_string(), rendered) {
                     Ok(_) => log.info(format_args!(
@@ -137,7 +166,7 @@ impl Builder {
         }
     }
 
-    fn render_sub_chapter_html(&self) {
+    fn render_sub_chapter_html(&mut self) {
         let mut log = Logger::console_log();
         let template = Template::new(&self.settings, &self.root.get_chapters());
 
@@ -175,6 +204,21 @@ impl Builder {
                         .to_lowercase(),
                 );
 
+                // push full text search data
+                self.document_index += 1;
+                let _ = &mut self.search_data.push(Document::new(
+                    self.document_index,
+                    format!(
+                        "/{}/{}.html",
+                        chapter_title.replace(' ', "-").to_lowercase(),
+                        utils::remove_md_extension(&html_content.path)
+                            .replace(' ', "-")
+                            .to_lowercase()
+                    ),
+                    html_content.title.to_string(),
+                    html_content.to_html(),
+                ));
+
                 // write to file /chapter2/chapter_1.1.1.html
                 match fs::write(
                     format!("{}.html", &sub_chapter_file.display().to_string()),
@@ -190,7 +234,7 @@ impl Builder {
         }
     }
 
-    fn render_chapter_html(&self) {
+    fn render_chapter_html(&mut self) {
         let mut log = Logger::console_log();
         let template = Template::new(&self.settings, &self.root.get_chapters());
         let root = self.settings.get_output_path();
@@ -220,6 +264,18 @@ impl Builder {
             context.insert("highlight", &template.highlight);
             context.insert("description", &template.description);
             context.insert("content", &html_content.to_html());
+
+            // push full text search data
+            self.document_index += 1;
+            let _ = &mut self.search_data.push(Document::new(
+                self.document_index,
+                format!(
+                    "/{}/index.html",
+                    chapter_title.replace(' ', "-").to_lowercase(),
+                ),
+                html_content.title.to_string(),
+                html_content.to_html(),
+            ));
 
             // render template
             let rendered = self.engine.render("index.html", &context).unwrap();
@@ -277,12 +333,12 @@ impl Builder {
 
     // HTML content for sub-chapters and return as HashMap<String, Vec<html::Hypertext>>
     fn sub_chapters_html(&self) -> HashMap<String, Vec<html::Hypertext>> {
-        let mut result: HashMap<String, Vec<html::Hypertext>> = HashMap::new(); // Initialize result HashMap.
-        let mut log = Logger::console_log(); // Initialize console logger.
+        let mut result: HashMap<String, Vec<html::Hypertext>> = HashMap::new();
+        let mut log = Logger::console_log();
 
         // iterate over chapters
         for chapter in self.root.get_chapters() {
-            let mut chapter_hypertexts: Vec<html::Hypertext> = Vec::new(); // Initialize Vec for sub-chapters
+            let mut chapter_hypertexts: Vec<html::Hypertext> = Vec::new();
 
             for sub_chapter in &chapter.sub_chapters {
                 let sub_chapter_path =
@@ -297,6 +353,7 @@ impl Builder {
                             &sub_chapter.path,
                             Markdown::new(&markdown_content),
                         );
+
                         chapter_hypertexts.push(hypertext);
 
                         log.info(format_args!(

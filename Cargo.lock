@@ -1805,6 +1805,7 @@ dependencies = [
  "pulldown-cmark",
  "reqwest",
  "serde",
+ "serde_json",
  "serde_yaml",
  "tera",
  "tokio",
