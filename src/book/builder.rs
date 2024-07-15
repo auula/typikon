@@ -1,7 +1,7 @@
 use tera::{Context, Tera};
 
 use crate::{
-    book::data::Document,
+    book::search::Document,
     cli,
     html::{self, Hypertext, Markdown, Template},
     utils::{self, Logger},
@@ -146,10 +146,10 @@ impl Builder {
 
                 // push full text search data
                 self.document_index += 1;
-                let _ = &mut self.search_data.push(Document::new(
+                self.search_data.push(Document::new(
                     self.document_index,
                     "/index.html".to_string(),
-                    template.name,
+                    template.name.clone(),
                     hypertext.to_html(),
                 ));
 
@@ -206,7 +206,7 @@ impl Builder {
 
                 // push full text search data
                 self.document_index += 1;
-                let _ = &mut self.search_data.push(Document::new(
+                self.search_data.push(Document::new(
                     self.document_index,
                     format!(
                         "/{}/{}.html",
@@ -267,7 +267,7 @@ impl Builder {
 
             // push full text search data
             self.document_index += 1;
-            let _ = &mut self.search_data.push(Document::new(
+            self.search_data.push(Document::new(
                 self.document_index,
                 format!(
                     "/{}/index.html",
@@ -324,7 +324,7 @@ impl Builder {
                         chapter_path
                     ));
                 }
-                Err(_) => continue,
+                Err(_) => log.error(format_args!("file not found {:?}", &chapter_path)),
             }
         }
 
