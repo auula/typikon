@@ -4,12 +4,11 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 	<title>{{ title }}</title>
-	<meta name="description" content="{{ description }}" />
-	<meta name="keywords" content="{{ keywords }}" />
-	<meta name="generator" content="typikon" />
-	<meta name="template" content="typikon-theme" />
+	<meta name="description" content="{{ description }}">
+	<meta name="keywords" content="{{ keywords }}">
+	<meta name="generator" content="typikon">
+	<meta name="template" content="typikon-theme">
 
 	{% for css_path in custom_css %}
 	<link rel="stylesheet" href="{{ css_path | safe }}">
@@ -20,7 +19,6 @@
 	<link rel="stylesheet" href="/assets/dark-theme.css" id="dark-theme" disabled>
 
 	<link rel="icon" href="{{ icon | safe }}" type="image/png">
-
 </head>
 
 <body>
@@ -41,7 +39,7 @@
 								</path>
 							</svg>
 						</span>
-						<input type="text" class="form-control" id="serach-text" placeholder="Full text serach..."
+						<input type="text" class="form-control" id="search-text" placeholder="Full text search..."
 							aria-describedby="basic-addon1">
 					</div>
 					<ul class="list-unstyled ps-0" id="chapterList">
@@ -90,36 +88,29 @@
 	{% endfor %}
 
 	<script>
-		document.addEventListener('DOMContentLoaded', initTheme);
-		window.onload = () => {
-			themeChange();
-			fullTextSearch();
-		};
+		document.addEventListener('DOMContentLoaded', function () {
+			initTheme();
+			initializeSearch();
+		});
 
-		function initTheme(event) {
+		function initTheme() {
 			const darkThemeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 			const lightThemeLink = document.getElementById('light-theme');
 			const darkThemeLink = document.getElementById('dark-theme');
 
-			changeTheme = (mediaQuery) => {
+			const changeTheme = (mediaQuery) => {
 				if (mediaQuery.matches) {
-					// Dark mode
 					lightThemeLink.setAttribute('disabled', true);
 					darkThemeLink.removeAttribute('disabled');
 				} else {
-					// Light mode
 					darkThemeLink.setAttribute('disabled', true);
 					lightThemeLink.removeAttribute('disabled');
 				}
 			};
 
-			// Initial check
 			changeTheme(darkThemeMediaQuery);
-
-			// Listen for changes in OS theme
 			darkThemeMediaQuery.addListener(changeTheme);
 
-			// Initial highlight.js
 			document.querySelectorAll('pre code').forEach((block) => {
 				hljs.highlightElement(block);
 			});
@@ -131,62 +122,61 @@
 					paragraph.classList.add('md-p');
 				});
 			}
-		};
+		}
 
-		function fullTextSearch() {
-			// Full text search data
-			const data = [
-				{ id: '1', title: '示例文档一', content: '这是示例文档一的内容。' },
-				{ id: '2', title: '示例文档二', content: '这是示例文档二的内容。' }
-			];
+		function initializeSearch() {
+			fetch('/data.json')
+				.then(response => response.json())
+				.then(data => {
+					const options = {
+						keys: ['title', "content"],
+						includeScore: true,
+						tokenize: true,
+						threshold: 0.3,
+						tokenSeparator: /[,|，|。]/
+					};
 
-			// Fuse.js options
-			const options = {
-				keys: ['title', 'content'],
-				includeScore: true,
-				tokenize: true,
-				threshold: 0.3,
-				tokenSeparator: /[,|，|。]/
-			};
+					const fuse = new Fuse(data, options);
+					const chapterList = document.getElementById('chapterList');
+					// 复制一份复原使用
+					let innerHTML = chapterList.innerHTML;
+					function performSearch() {
+						const query = document.getElementById('search-text').value.trim();
+						const results = fuse.search(query);
 
-			const fuse = new Fuse(data, options);
-			const chapterList = document.getElementById('chapterList');
+						// 设置显示菜单和搜索结果，如果没有搜索结果就显示菜单，有则反之
+						chapterList.innerHTML = results.length <= 0 ? chapterList.innerHTML = innerHTML : '';
 
-			function performSearch() {
-				const query = document.getElementById('serach-text').value.trim();
-				const results = fuse.search(query);
+						// 遍历搜索结果并生成对应的 HTML
+						results.forEach(result => {
+							const sub_chapter = result.item; // 假设每个搜索结果是 sub_chapter 对象
 
-				chapterList.style.display = query !== '' ? 'none' : 'block';
+							// 构建章节和子章节的列表项 HTML
+							const listItem = `
+								<li class="mb-1">
+									<div class="collapse show" id="collapse1">
+										<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+											<li>
+												<a href="${sub_chapter.url}"
+												class="link-body-emphasis d-inline-flex text-decoration-none rounded">
+													${sub_chapter.title}
+												</a>
+											</li>
+										</ul>
+									</div>
+								</li>
+        					`;
 
-				results.forEach(result => {
-					console.log(`${result.item.title} - ${result.item.content}`);
-				});
-			};
+							// 将拼接好的章节列表项添加到章节列表容器
+							chapterList.innerHTML += listItem;
+						});
+					}
 
-			const searchInput = document.getElementById("serach-text");
-			searchInput.addEventListener("input", performSearch);
-		};
-
-		function themeChange() {
-			const darkThemeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-			const lightThemeLink = document.getElementById('light-theme');
-			const darkThemeLink = document.getElementById('dark-theme');
-			changeTheme = (mediaQuery) => {
-				if (mediaQuery.matches) {
-					// Dark mode
-					lightThemeLink.setAttribute('disabled', true);
-					darkThemeLink.removeAttribute('disabled');
-				} else {
-					// Light mode
-					darkThemeLink.setAttribute('disabled', true);
-					lightThemeLink.removeAttribute('disabled');
-				}
-			};
-			// Initial check
-			changeTheme(darkThemeMediaQuery);
-			// Listen for changes in OS theme
-			darkThemeMediaQuery.addListener(changeTheme);
-		};
+					const searchInput = document.getElementById('search-text');
+					searchInput.addEventListener('input', performSearch);
+				})
+				.catch(error => console.error('Error fetching data:', error));
+		}
 	</script>
 </body>
 

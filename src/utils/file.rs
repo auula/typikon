@@ -42,7 +42,7 @@ pub fn remove_md_extension(filename: &str) -> String {
 }
 
 pub fn download_zip() -> Result<(), Box<dyn std::error::Error>> {
-    let repo_url = "https://github.com/typikonbook/typikon-book/archive/refs/heads/main.zip";
+    let repo_url = "https://github.com/typikonbook/typikon-book-v3/archive/refs/heads/main.zip";
     let zip_path = Path::new("repo.zip");
     let extract_path = Path::new(".");
 
