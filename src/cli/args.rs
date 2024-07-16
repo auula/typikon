@@ -27,7 +27,7 @@ The commands are:
 Use typikon help <command> for more information about a command.
 ";
 
-const VERSION: &str = "0.1.2";
+const VERSION: &str = "0.1.3";
 
 pub fn output_banner_help() {
     println!(
