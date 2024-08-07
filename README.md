@@ -50,10 +50,3 @@ This project follows the all-contributors specification. All kinds of contributi
 ![Contributors](https://contributors-img.web.app/image?repo=auula/typikon)
 
 
----
-
-## WeChat Group
-
-> 中国大陆用户可以加微信群一起讨论设计与代码实现细节。
-
-<img src="https://img.ibyte.me/iwfiu2.jpg" alt="Alt text" style="width: 180px; height: 260px;">
