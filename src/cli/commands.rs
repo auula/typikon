@@ -167,12 +167,12 @@ pub fn handle_init_command(_args: &[String]) {
         return;
     }
 
-    if let Err(err) = utils::move_dir_contents(Path::new("typikon-book-main"), Path::new(".")) {
+    if let Err(err) = utils::move_dir_contents(Path::new("typikon-book-v3-main"), Path::new(".")) {
         log.error(format_args!("{:?}", err));
         return;
     }
 
-    if let Err(err) = utils::delete_folder(Path::new("typikon-book-main")) {
+    if let Err(err) = utils::delete_folder(Path::new("typikon-book-v3-main")) {
         log.error(format_args!("{:?}", err));
         return;
     }
