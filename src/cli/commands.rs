@@ -20,6 +20,7 @@ pub enum Command {
     Init,
     Help,
     Serve,
+    Watch,
     Unknown(String),
 }
 
@@ -30,6 +31,7 @@ impl Command {
             "init" => Command::Init,
             "help" => Command::Help,
             "serve" => Command::Serve,
+            "watch" => Command::Watch,
             _ => Command::Unknown(s.to_string()),
         }
     }
@@ -42,6 +44,7 @@ impl fmt::Display for Command {
             Command::Serve => write!(f, "serve"),
             Command::Init => write!(f, "init"),
             Command::Help => write!(f, "help"),
+            Command::Watch => write!(f, "watch"),
             Command::Unknown(s) => write!(f, "Unknown({})", s),
         }
     }
@@ -77,12 +80,22 @@ const SERVE_HELP_TEXT: &str = r"
 
 ";
 
+const WATCH_HELP_TEXT: &str = r"
+
+    Example:
+
+    Watch the file changes and rebuild the book 👇
+
+    $: mkdir example && typikon watch
+";
+
 static HELP_INFO: Lazy<Mutex<HashMap<Command, colored::ColoredString>>> = Lazy::new(|| {
     let mut help_info: HashMap<Command, colored::ColoredString> = HashMap::new();
 
     help_info.insert(Command::Build, BUILD_HELP_TEXT.green());
     help_info.insert(Command::Serve, SERVE_HELP_TEXT.green());
     help_info.insert(Command::Init, INIT_HELP_TEXT.green());
+    help_info.insert(Command::Watch, WATCH_HELP_TEXT.green());
 
     Mutex::new(help_info)
 });
@@ -137,7 +150,7 @@ pub fn handle_serve_command(_args: &[String]) {
     log.info(format_args!("HTTP server stopped."));
 }
 
-pub fn handle_live_serve_command() {
+pub fn handle_watch_command() {
     let mut log = Logger::console_log();
     let settings = match settings::get_settings() {
         Ok(settings) => settings,
@@ -209,13 +222,14 @@ pub fn handle_help_command(args: &[String]) {
     let help = HELP_INFO.lock().unwrap();
 
     match command {
-        Command::Build | Command::Init | Command::Help | Command::Serve => {
+        Command::Build | Command::Init | Command::Help | Command::Serve | Command::Watch => {
             if let Some(help_text) = help.get(&command) {
                 println!("{}", help_text);
             } else {
                 log.error(format_args!("No help available for command: {}", option));
             }
         }
+
         Command::Unknown(_) => {
             log.error(format_args!(
                 "Unknown option: {:?}. Available options: [init, serve, build]",

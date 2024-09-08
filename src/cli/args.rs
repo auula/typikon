@@ -23,6 +23,7 @@ The commands are:
     init      Initialize to working directory
     serve     Serve starting the static http server
     build     Builder static html file and output to book
+    watch     Watch the file changes and rebuild the book
 
 Use typikon help <command> for more information about a command.
 ";
