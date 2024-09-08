@@ -1,17 +1,18 @@
-use colored::Colorize;
-use core::fmt;
-use once_cell::sync::Lazy;
-use std::collections::HashMap;
-use std::path::Path;
-use std::sync::Mutex;
-use tokio::runtime::Runtime;
-
+use super::ouput_banner;
 use crate::{
     book::{self, settings},
     utils::{self, Logger},
 };
-
-use super::ouput_banner;
+use colored::Colorize;
+use core::fmt;
+use notify::RecursiveMode;
+use notify_debouncer_mini::{new_debouncer, DebouncedEventKind};
+use once_cell::sync::Lazy;
+use std::collections::HashMap;
+use std::sync::mpsc::channel;
+use std::sync::Mutex;
+use std::{path::Path, time::Duration};
+use tokio::runtime::Runtime;
 
 #[derive(Eq, Hash, PartialEq, Debug)]
 pub enum Command {
@@ -86,7 +87,7 @@ static HELP_INFO: Lazy<Mutex<HashMap<Command, colored::ColoredString>>> = Lazy::
     Mutex::new(help_info)
 });
 
-pub fn handle_build_command(_args: &[String]) {
+fn build_book() {
     let mut log = Logger::console_log();
     match book::new_builder() {
         Ok(mut builder) => match builder.generate_books() {
@@ -97,6 +98,10 @@ pub fn handle_build_command(_args: &[String]) {
         },
         Err(err) => log.error(format_args!("{}", err)),
     }
+}
+
+pub fn handle_build_command(_args: &[String]) {
+    build_book()
 }
 
 pub fn handle_serve_command(_args: &[String]) {
@@ -120,13 +125,76 @@ pub fn handle_serve_command(_args: &[String]) {
 
     let docs = warp::fs::dir(settings.directory.output.clone());
 
-    log.info(format_args!("Starting HTTP server on port {}", settings.port));
+    log.info(format_args!(
+        "Starting HTTP server on port {}",
+        settings.port
+    ));
 
     runtime.block_on(async {
         warp::serve(docs).run(([127, 0, 0, 1], settings.port)).await;
     });
 
     log.info(format_args!("HTTP server stopped."));
+}
+
+pub fn handle_live_serve_command() {
+    let mut log = Logger::console_log();
+    let settings = match settings::get_settings() {
+        Ok(settings) => settings,
+        Err(err) => {
+            log.error(format_args!("Failed to get settings: {:?}", err));
+            return;
+        }
+    };
+    // create a new builder
+    build_book();
+    let runtime = match Runtime::new() {
+        Ok(runtime) => runtime,
+        Err(err) => {
+            log.error(format_args!("Failed to create Tokio runtime: {:?}", err));
+            return;
+        }
+    };
+
+    let docs = warp::fs::dir(settings.directory.output.clone());
+
+    log.info(format_args!(
+        "Starting HTTP server on port {}",
+        settings.port
+    ));
+
+    runtime.spawn(async move {
+        warp::serve(docs).run(([127, 0, 0, 1], settings.port)).await;
+    });
+    // create a channel to receive file change events
+    let (tx, rx) = channel();
+
+    let mut debouncer = new_debouncer(Duration::from_secs(1), tx).unwrap();
+
+    debouncer
+        .watcher()
+        .watch(
+            Path::new(&settings.get_input_path()),
+            RecursiveMode::Recursive,
+        )
+        .unwrap();
+    runtime.block_on(async {
+        for res in rx {
+            match res {
+                Ok(events) => events.iter().for_each(|event| match event.kind {
+                    DebouncedEventKind::Any => {
+                        log.info(format_args!("File changed: {:?}", event.path));
+                        log.info(format_args!("Rebuilding book..."));
+                        build_book();
+                    }
+                    _ => {
+                        return;
+                    }
+                }),
+                Err(error) => log.error(format_args!("watch error: {:?}", error)),
+            }
+        }
+    });
 }
 
 pub fn handle_help_command(args: &[String]) {
