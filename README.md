@@ -24,8 +24,8 @@ Typikon name derived from [Typikon](https://en.wikipedia.org/wiki/Typikon) Book,
 ## Preview
 
 <div style="display: flex; justify-content: space-around;">
-    <img src="https://img.ibyte.me/z1zano.png" alt="Alt text" style="width: 400px; height: 300px;">
-    <img src="https://img.ibyte.me/lvc0iv.png" alt="Alt text" style="width: 400px; height: 300px;">
+    <img src="https://img.leonding.me/z1zano.png" alt="Alt text" style="width: 400px; height: 300px;">
+    <img src="https://img.leonding.me/lvc0iv.png" alt="Alt text" style="width: 400px; height: 300px;">
 </div>
 
 ---
