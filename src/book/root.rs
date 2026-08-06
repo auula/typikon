@@ -1,9 +1,7 @@
-use std::{
-    fs,
-    io::{self, ErrorKind},
-};
-
 use serde::{Deserialize, Serialize};
+use std::fs;
+use std::io::{self, ErrorKind};
+use std::path::Path;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Root {
@@ -31,33 +29,21 @@ impl Root {
 }
 
 pub fn get_root() -> io::Result<Root> {
-    let yaml_str = fs::read_to_string("root.yml").map_err(|err| {
-        io::Error::new(
-            ErrorKind::InvalidData,
-            format!("File not found root.yml file: {:?}", err),
-        )
-    })?;
-    let book_directory = serde_yaml::from_str(&yaml_str).map_err(|err| {
-        io::Error::new(
-            ErrorKind::InvalidData,
-            format!("Failed to parse root.yml file: {:?}", err),
-        )
-    })?;
-    Ok(book_directory)
+    get_root_from_file("root.yml")
 }
 
-pub fn get_root_from_file(file_path: &str) -> io::Result<Root> {
-    let yaml_str = fs::read_to_string(file_path).map_err(|err| {
+pub fn get_root_from_file(file_path: impl AsRef<Path>) -> io::Result<Root> {
+    let file_path = file_path.as_ref();
+    let yaml_str = fs::read_to_string(file_path).map_err(|error| {
         io::Error::new(
-            ErrorKind::InvalidData,
-            format!("File not found {}: {:?}", file_path, err),
+            ErrorKind::NotFound,
+            format!("Failed to read root file {}: {error}", file_path.display()),
         )
     })?;
-    let root = serde_yaml::from_str(&yaml_str).map_err(|err| {
+    serde_yaml::from_str(&yaml_str).map_err(|error| {
         io::Error::new(
             ErrorKind::InvalidData,
-            format!("Failed to parse {}: {:?}", file_path, err),
+            format!("Failed to parse root file {}: {error}", file_path.display()),
         )
-    })?;
-    Ok(root)
+    })
 }

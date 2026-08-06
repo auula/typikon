@@ -4,21 +4,22 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>{{ title }}</title>
-	<meta name="description" content="{{ description }}">
-	<meta name="keywords" content="{{ keywords }}">
+		<title>{{ title }}</title>
+		<meta name="description" content="{{ description }}">
+		<meta name="keywords" content="{{ keywords }}">
+		<meta name="author" content="{{ author }}">
 	<meta name="generator" content="typikon">
 	<meta name="template" content="typikon-theme">
 
 	{% for css_path in custom_css %}
-	<link rel="stylesheet" href="{{ css_path | safe }}">
+		<link rel="stylesheet" href="{{ css_path }}">
 	{% endfor %}
 	<!-- Light theme stylesheet -->
-	<link rel="stylesheet" href="/assets/light-theme.css" id="light-theme">
+		<link rel="stylesheet" href="{{ base_url }}/assets/light-theme.css" id="light-theme">
 	<!-- Dark theme stylesheet (initially disabled) -->
-	<link rel="stylesheet" href="/assets/dark-theme.css" id="dark-theme" disabled>
+		<link rel="stylesheet" href="{{ base_url }}/assets/dark-theme.css" id="dark-theme" disabled>
 
-	<link rel="icon" href="{{ icon | safe }}" type="image/png">
+		<link rel="icon" href="{{ icon }}" type="image/png">
 </head>
 
 <body>
@@ -26,7 +27,7 @@
 		<div class="row">
 			<div class="col-md-4 col-sm-12">
 				<div class="flex-shrink-0 p-2" style="width: 100%;">
-					<a href="/index.html"
+						<a href="{{ base_url }}/index.html"
 						class="d-flex align-items-center justify-content-center pb-3 mb-3 link-body-emphasis text-decoration-none border-bottom">
 						<span class="fs-4 fw-semibold">{{ title }}</span>
 					</a>
@@ -46,14 +47,14 @@
 						{% for chapter in chapters %}
 						<li class="mb-1">
 							<a class="btn d-inline-flex align-items-center rounded border-0"
-								href="/{{ chapter.path }}/index.html">
+									href="{{ base_url }}/{{ chapter.path }}/index.html">
 								{{ chapter.title }}
 							</a>
 							<div class="collapse show" id="collapse1">
 								<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
 									{% for sub_chapter in chapter.sub_chapters %}
 									<li>
-										<a href="/{{ chapter.path }}/{{ sub_chapter.path }}.html"
+											<a href="{{ base_url }}/{{ chapter.path }}/{{ sub_chapter.path }}.html"
 											class="link-body-emphasis d-inline-flex text-decoration-none rounded">
 											{{ sub_chapter.title }}
 										</a>
@@ -64,7 +65,7 @@
 						</li>
 						{% endfor %}
 						<li class="border-top my-3"></li>
-						<li class="mb-3 mb-md-0 text-body-secondary">Copyright © Typikon Inc</li>
+							<li class="mb-3 mb-md-0 text-body-secondary">Copyright (c) {{ author }}</li>
 					</ul>
 				</div>
 			</div>
@@ -77,14 +78,14 @@
 		</div>
 	</div>
 
-	<script src="/assets/highlight/highlight.min.js"></script>
+		<script src="{{ base_url }}/assets/highlight/highlight.min.js"></script>
 
 	{% for lang_path in highlight %}
-	<script src="/assets/highlight/languages/{{ lang_path }}.min.js"></script>
+		<script src="{{ base_url }}/assets/highlight/languages/{{ lang_path }}.min.js"></script>
 	{% endfor %}
 
 	{% for js_path in custom_js %}
-	<script src="{{ js_path | safe }}"></script>
+		<script src="{{ js_path }}"></script>
 	{% endfor %}
 
 	<script>
@@ -109,7 +110,11 @@
 			};
 
 			changeTheme(darkThemeMediaQuery);
-			darkThemeMediaQuery.addListener(changeTheme);
+				if (darkThemeMediaQuery.addEventListener) {
+					darkThemeMediaQuery.addEventListener('change', changeTheme);
+				} else {
+					darkThemeMediaQuery.addListener(changeTheme);
+				}
 
 			document.querySelectorAll('pre code').forEach((block) => {
 				hljs.highlightElement(block);
@@ -125,8 +130,13 @@
 		}
 
 		function initializeSearch() {
-			fetch('/data.json')
-				.then(response => response.json())
+				fetch({{ base_url | json_encode | safe }} + '/data.json')
+					.then(response => {
+						if (!response.ok) {
+							throw new Error(`Search index request failed: ${response.status}`);
+						}
+						return response.json();
+					})
 				.then(data => {
 					const options = {
 						keys: ['title', "content"],
@@ -138,38 +148,29 @@
 
 					const fuse = new Fuse(data, options);
 					const chapterList = document.getElementById('chapterList');
-					// 复制一份复原使用
+					// Keep the original navigation markup for restoring an empty search.
 					let innerHTML = chapterList.innerHTML;
 					function performSearch() {
 						const query = document.getElementById('search-text').value.trim();
 						const results = fuse.search(query);
 
-						// 设置显示菜单和搜索结果，如果没有搜索结果就显示菜单，有则反之
-						chapterList.innerHTML = results.length <= 0 ? chapterList.innerHTML = innerHTML : '';
+							if (results.length === 0) {
+								chapterList.innerHTML = innerHTML;
+								return;
+							}
 
-						// 遍历搜索结果并生成对应的 HTML
-						results.forEach(result => {
-							const sub_chapter = result.item; // 假设每个搜索结果是 sub_chapter 对象
-
-							// 构建章节和子章节的列表项 HTML
-							const listItem = `
-								<li class="mb-1">
-									<div class="collapse show" id="collapse1">
-										<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-											<li>
-												<a href="${sub_chapter.url}"
-												class="link-body-emphasis d-inline-flex text-decoration-none rounded">
-													${sub_chapter.title}
-												</a>
-											</li>
-										</ul>
-									</div>
-								</li>
-        					`;
-
-							// 将拼接好的章节列表项添加到章节列表容器
-							chapterList.innerHTML += listItem;
-						});
+							chapterList.replaceChildren();
+							results.forEach(result => {
+								const documentItem = result.item;
+								const listItem = document.createElement('li');
+								const link = document.createElement('a');
+								listItem.className = 'mb-1';
+								link.className = 'link-body-emphasis d-inline-flex text-decoration-none rounded';
+								link.href = documentItem.url;
+								link.textContent = documentItem.title;
+								listItem.appendChild(link);
+								chapterList.appendChild(listItem);
+							});
 					}
 
 					const searchInput = document.getElementById('search-text');

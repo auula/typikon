@@ -1,4 +1,4 @@
-use std::{env, process::exit};
+use std::env;
 
 use colored::Colorize;
 
@@ -11,48 +11,57 @@ const BANNER: &str = r"
      \__|\_, | .__/_|_\_\___/_||_|
         |__/|_|     v{}
 
-    Typikon lets you use markdown to write your online books.
-    Website: http://typikonbook.github.io License: Apache 2.0
+    Typikon lets you use Markdown to write online books.
+    Website: https://typikonbook.github.io  License: Apache-2.0
 ";
 
 const HELP_INFO: &str = r"
-    Usage: typikon <command> [<args>...]
+    Usage: typikon <command>
 
-    The commands are:
+    Commands:
+        init      Initialize an empty working directory
+        build     Build the static book
+        serve     Serve the current output directory
+        watch     Rebuild changed files and serve the output
+        help      Show command help
+        version   Show the installed version
 
-        init      Initialize to working directory
-        serve     Serve starting the static http server
-        build     Builder static html file and output to book
-        watch     Watch the file changes and rebuild the book
-
-    Use typikon help <command> for more information about a command.
+    Use `typikon help <command>` for command-specific examples.
 ";
-
-const VERSION: &str = "0.1.5";
 
 pub fn output_banner_help() {
     println!(
         "{}\n{}",
-        BANNER.replace("{}", VERSION).as_str().purple(),
+        BANNER.replace("{}", env!("CARGO_PKG_VERSION")).purple(),
         HELP_INFO.purple()
-    )
+    );
 }
 
+pub fn output_banner() {
+    println!(
+        "{}",
+        BANNER.replace("{}", env!("CARGO_PKG_VERSION")).purple()
+    );
+}
+
+// Keep the misspelled public function as a compatibility alias for existing callers.
 pub fn ouput_banner() {
-    println!("{}", BANNER.replace("{}", VERSION).as_str().purple())
+    output_banner();
 }
 
-// Analyze the parameters input in the command line,
 pub fn parse_args() -> (Command, Vec<String>) {
-    let args: Vec<String> = env::args().collect();
+    parse_args_from(env::args().skip(1))
+}
 
-    if args.len() < 2 {
-        output_banner_help();
-        exit(0)
-    }
-
-    let cmd = args[1].clone();
-    let params = args[2..].to_vec();
-
-    (Command::from_str(cmd.as_str()), params)
+pub fn parse_args_from<I, S>(args: I) -> (Command, Vec<String>)
+where
+    I: IntoIterator<Item = S>,
+    S: Into<String>,
+{
+    let mut args = args.into_iter().map(Into::into);
+    let command = args
+        .next()
+        .map(|value| Command::parse(&value))
+        .unwrap_or(Command::Help);
+    (command, args.collect())
 }

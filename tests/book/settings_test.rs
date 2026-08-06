@@ -1,62 +1,59 @@
-#[cfg(test)]
-mod tests {
-    use std::fs;
+use crate::common::ProjectFixture;
+use std::fs;
+use typikon::book::get_settings_from_file;
 
-    use typikon::book::get_settings_from_file;
+#[test]
+fn defaults_base_url_for_legacy_settings() {
+    let fixture = ProjectFixture::new("");
+    let settings_path = fixture.path().join("settings.yml");
+    let settings = fs::read_to_string(&settings_path)
+        .expect("read settings")
+        .replace("base_url: \"\"\n", "");
+    fs::write(&settings_path, settings).expect("write legacy settings");
 
-    #[test]
-    fn test_get_settings() {
-        // Write a simple settings YAML string for testing
-        let yaml_str = r#"
-            port: 8080
-            icon: "icon.png"
-            theme: "default"
-            title: "Test Title"
-            author: "Test Author"
-            language: "English"
-            keywords: "test, example"
-            description: "Testing settings"
-            directory:
-                theme: "themes/default"
-                input: "input/"
-                output: "output/"
-            custom_js:
-                - "custom.js"
-            custom_css:
-                - "custom.css"
-            highlight:
-                - c
-                - cpp
-                - java
-                - rust  
-        "#;
+    let settings = get_settings_from_file(settings_path).expect("parse legacy settings");
+    assert_eq!(settings.base_url, "");
+    assert_eq!(settings.normalized_base_url().expect("normalize URL"), "");
+}
 
-        // Write the YAML string to a temporary file for the test
-        let temp_file_path = "test_settings.yml";
-        fs::write(temp_file_path, yaml_str).expect("Failed to write temporary file");
+#[test]
+fn rejects_output_that_overlaps_source_directories() {
+    let fixture = ProjectFixture::new("");
+    fixture.write_settings("book/generated", "");
+    let settings =
+        get_settings_from_file(fixture.path().join("settings.yml")).expect("parse settings");
 
-        // Attempt to get settings from the temporary file
-        let result = get_settings_from_file(temp_file_path);
+    let error = settings
+        .resolve_directories(fixture.path())
+        .expect_err("overlap must fail");
+    assert!(error.to_string().contains("cannot overlap"));
+}
 
-        // Remove the temporary file after the test
-        fs::remove_file(temp_file_path).expect("Failed to remove temporary file");
+#[test]
+fn normalizes_project_page_base_url() {
+    let fixture = ProjectFixture::new("manual/");
+    let settings =
+        get_settings_from_file(fixture.path().join("settings.yml")).expect("parse settings");
+    assert_eq!(
+        settings.normalized_base_url().expect("normalize base URL"),
+        "/manual"
+    );
+}
 
-        // Assert that the settings were retrieved successfully
-        assert!(result.is_ok());
-        let settings = result.unwrap();
-        assert_eq!(settings.port, 8080);
-        assert_eq!(settings.icon, "icon.png");
-        assert_eq!(settings.theme, "default");
-        assert_eq!(settings.title, "Test Title");
-        assert_eq!(settings.author, "Test Author");
-        assert_eq!(settings.language, "English");
-        assert_eq!(settings.keywords, "test, example");
-        assert_eq!(settings.description, "Testing settings");
-        assert_eq!(settings.directory.theme, "themes/default");
-        assert_eq!(settings.directory.input, "input/");
-        assert_eq!(settings.directory.output, "output/");
-        assert_eq!(settings.custom_js, vec!["custom.js"]);
-        assert_eq!(settings.custom_css, vec!["custom.css"]);
-        assert_eq!(settings.highlight, vec!["c", "cpp", "java", "rust"]);
-    }
+#[cfg(unix)]
+#[test]
+fn rejects_symlinks_in_output_parent_paths() {
+    use std::os::unix::fs::symlink;
+
+    let fixture = ProjectFixture::new("");
+    let outside = tempfile::tempdir().expect("outside directory");
+    symlink(outside.path(), fixture.path().join("linked")).expect("create output symlink");
+    fixture.write_settings("linked/site", "");
+    let settings =
+        get_settings_from_file(fixture.path().join("settings.yml")).expect("parse settings");
+
+    let error = settings
+        .resolve_directories(fixture.path())
+        .expect_err("output symlink must fail");
+    assert!(error.to_string().contains("symbolic links"));
 }

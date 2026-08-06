@@ -1,25 +1,25 @@
+use crate::book::{self, Settings, SubChapter};
+use crate::utils::{markdown_route, path_to_url, site_url};
 use serde::{Deserialize, Serialize};
-
-use crate::{
-    book::{self, Settings, SubChapter},
-    utils,
-};
+use std::io;
+use std::path::Path;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Chapter {
-    pub title: String,                 // Title of the chapter.
-    pub path: String,                  // Path to the chapter.
-    pub sub_chapters: Vec<SubChapter>, // List of sub-chapters.
+    pub title: String,
+    pub path: String,
+    pub sub_chapters: Vec<SubChapter>,
 }
 
-// Template struct for HTML template and data to be rendered
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Template {
     pub name: String,
+    pub author: String,
     pub icon: String,
     pub keywords: String,
     pub html_lang: String,
     pub description: String,
+    pub base_url: String,
     pub chapters: Vec<Chapter>,
     pub highlight: Vec<String>,
     pub custom_js: Vec<String>,
@@ -27,45 +27,54 @@ pub struct Template {
 }
 
 impl Template {
-    // Constructor method to create a new Template instance
-    pub fn new(settings: &Settings, chapters: &[book::Chapter]) -> Template {
-        let mut new_chapters = Vec::new();
+    pub fn new(settings: &Settings, chapters: &[book::Chapter]) -> io::Result<Template> {
+        let base_url = settings.normalized_base_url()?;
+        let mut template_chapters = Vec::with_capacity(chapters.len());
 
-        // Format chapters
-        chapters.iter().for_each(|chapter| {
-            let mut new_sub_chapters = Vec::new();
+        for chapter in chapters {
+            let chapter_route = markdown_route(Path::new(&chapter.path))?;
+            let mut sub_chapters = Vec::with_capacity(chapter.sub_chapters.len());
 
-            // Format sub-chapters
-            chapter.sub_chapters.iter().for_each(|sub_chapter| {
-                let sub_chapter_path = utils::remove_md_extension(&sub_chapter.path)
-                    .replace(' ', "-")
-                    .to_lowercase();
-
-                new_sub_chapters.push(SubChapter {
+            for sub_chapter in &chapter.sub_chapters {
+                let sub_chapter_route = markdown_route(Path::new(&sub_chapter.path))?;
+                sub_chapters.push(SubChapter {
                     title: sub_chapter.title.clone(),
-                    path: sub_chapter_path,
+                    path: path_to_url(&sub_chapter_route)?,
                 });
-            });
+            }
 
-            new_chapters.push(Chapter {
+            template_chapters.push(Chapter {
                 title: chapter.title.clone(),
-                path: utils::remove_md_extension(&chapter.path)
-                    .replace(' ', "-")
-                    .to_lowercase(),
-                sub_chapters: new_sub_chapters,
+                path: path_to_url(&chapter_route)?,
+                sub_chapters,
             });
-        });
+        }
 
-        Self {
-            chapters: new_chapters,
+        // Prefix configured local assets with base_url while preserving external URLs.
+        let icon = site_url(&base_url, &settings.icon);
+        let custom_js = settings
+            .custom_js
+            .iter()
+            .map(|path| site_url(&base_url, path))
+            .collect();
+        let custom_css = settings
+            .custom_css
+            .iter()
+            .map(|path| site_url(&base_url, path))
+            .collect();
+
+        Ok(Self {
+            chapters: template_chapters,
             name: settings.title.clone(),
-            icon: settings.icon.clone(),
+            author: settings.author.clone(),
+            icon,
             keywords: settings.keywords.clone(),
             html_lang: settings.language.clone(),
             highlight: settings.highlight.clone(),
-            custom_js: settings.custom_js.clone(),
-            custom_css: settings.custom_css.clone(),
+            custom_js,
+            custom_css,
             description: settings.description.clone(),
-        }
+            base_url,
+        })
     }
 }

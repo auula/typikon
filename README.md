@@ -34,6 +34,8 @@ Typikon name derived from [Typikon](https://en.wikipedia.org/wiki/Typikon) Book,
 
 To learn how to use the `Typikon` program, you can refer to the documentation that I have written. This documentation is generally rendered and built using Typikon. The online documentation can be accessed at the following address: [https://typikonbook.github.io](https://typikonbook.github.io) 🌟.
 
+The compatibility refactor, migration rules, and validation commands are documented in [COMPATIBILITY_REFACTOR.md](COMPATIBILITY_REFACTOR.md).
+
 ---
 
 ## Stargazers over time
@@ -48,5 +50,4 @@ This project follows the all-contributors specification. All kinds of contributi
 
 
 ![Contributors](https://contributors-img.web.app/image?repo=auula/typikon)
-
 

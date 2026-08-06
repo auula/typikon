@@ -1,377 +1,304 @@
+use crate::book::search::Document;
+use crate::html::{Markdown, Template};
+use crate::utils::{
+    copy_file, invalid_input, markdown_route, path_to_url, site_url, validate_relative_path, Logger,
+};
+use crate::{TypikonError, TypikonResult};
+use std::collections::HashSet;
+use std::fs::{self, File};
+use std::io::Write;
+use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicU64, Ordering};
 use tera::{Context, Tera};
 
-use crate::{
-    book::search::Document,
-    cli,
-    html::{self, Hypertext, Markdown, Template},
-    utils::{self, Logger},
-};
-
+use super::settings::ResolvedDirectories;
 use super::{root, settings, Root, Settings};
-use std::{
-    collections::HashMap,
-    fs::{self, File},
-    io::{self, Write},
-    path::Path,
-};
+
+static UNIQUE_PATH_COUNTER: AtomicU64 = AtomicU64::new(0);
 
 #[derive(Debug)]
 pub struct Builder {
     pub engine: Tera,
     pub root: Root,
     pub settings: Settings,
+    pub directories: ResolvedDirectories,
     pub document_index: i32,
     pub search_data: Vec<Document>,
+    template: Template,
 }
 
-pub fn new_builder() -> Result<Builder, Box<dyn std::error::Error>> {
-    let root = root::get_root()?;
-    let settings = settings::get_settings()?;
-    let engine = Tera::new(
-        // create new tera instance for template engine.
-        format!(
-            "{}/{}/**/*.html",
-            &settings.get_theme_path(),
-            &settings.get_theme_name()
-        )
-        .as_str(),
-    )?;
+pub fn new_builder() -> TypikonResult<Builder> {
+    let project_root = std::env::current_dir()?;
+    new_builder_at(project_root)
+}
+
+pub fn new_builder_at(project_root: impl AsRef<Path>) -> TypikonResult<Builder> {
+    let project_root = project_root.as_ref().canonicalize()?;
+    let root = root::get_root_from_file(project_root.join("root.yml"))?;
+    let settings = settings::get_settings_from_file(project_root.join("settings.yml"))?;
+    let directories = settings.resolve_directories(&project_root)?;
+
+    validate_book(&root, &directories.input)?;
+    validate_output_routes(&root)?;
+
+    let template_path = directories.active_theme.join("index.html");
+    let mut engine = Tera::default();
+
+    // Load one explicit template to avoid Windows separators and glob characters in paths.
+    engine.add_template_file(&template_path, Some("index.html"))?;
+    let template = Template::new(&settings, &root.chapters)?;
 
     Ok(Builder {
         engine,
         root,
         settings,
+        directories,
         document_index: 0,
         search_data: Vec::new(),
+        template,
     })
 }
 
 impl Builder {
-    pub fn generate_books(&mut self) -> io::Result<()> {
-        cli::ouput_banner();
-        self.create_workspace();
-        self.copy_theme_assets();
-        self.render_index_html();
-        self.render_chapter_html();
-        self.render_sub_chapter_html();
-        self.save_data_json()?;
+    pub fn generate_books(&mut self) -> TypikonResult<()> {
+        self.document_index = 0;
+        self.search_data.clear();
+
+        let temporary_output = unique_sibling_path(&self.directories.output, "building")?;
+        fs::create_dir_all(&temporary_output)?;
+
+        // Replace the published site only after the temporary build has fully succeeded.
+        if let Err(error) = self.generate_into(&temporary_output) {
+            let _ = fs::remove_dir_all(&temporary_output);
+            return Err(error);
+        }
+
+        replace_output_directory(&temporary_output, &self.directories.output)?;
         Ok(())
     }
 
-    fn save_data_json(&self) -> std::io::Result<()> {
+    fn generate_into(&mut self, output_root: &Path) -> TypikonResult<()> {
+        let mut log = Logger::console_log();
+        let assets_source = self.directories.active_theme.join("assets");
+        let assets_output = output_root.join("assets");
+        copy_file(&assets_source, &assets_output)?;
+        log.info(format_args!(
+            "Building static assets {:?} successful",
+            assets_output
+        ));
+
+        let index_markdown = self.read_markdown(Path::new(&self.root.path), "index")?;
+        self.render_page(
+            output_root,
+            Path::new("index.html"),
+            self.template.name.clone(),
+            index_markdown,
+        )?;
+
+        // Preserve root.yml order so data.json and logs remain deterministic across platforms.
+        for chapter in self.root.chapters.clone() {
+            let chapter_route = markdown_route(Path::new(&chapter.path))?;
+            let chapter_output = chapter_route.join("index.html");
+            let chapter_markdown = self.read_markdown(Path::new(&chapter.path), "chapter")?;
+            self.render_page(
+                output_root,
+                &chapter_output,
+                chapter.title.clone(),
+                chapter_markdown,
+            )?;
+
+            for sub_chapter in chapter.sub_chapters {
+                let sub_route = markdown_route(Path::new(&sub_chapter.path))?;
+                let mut sub_output = chapter_route.join(sub_route);
+                sub_output.set_extension("html");
+                let sub_markdown =
+                    self.read_markdown(Path::new(&sub_chapter.path), "subchapter")?;
+                self.render_page(output_root, &sub_output, sub_chapter.title, sub_markdown)?;
+            }
+        }
+
+        self.save_data_json(output_root)?;
+        Ok(())
+    }
+
+    fn read_markdown(&self, relative_path: &Path, label: &str) -> TypikonResult<Markdown> {
+        let source = resolve_markdown_file(&self.directories.input, relative_path, label)?;
+        Ok(Markdown::new(fs::read_to_string(source)?))
+    }
+
+    fn render_page(
+        &mut self,
+        output_root: &Path,
+        relative_output: &Path,
+        page_title: String,
+        markdown: Markdown,
+    ) -> TypikonResult<()> {
+        let html_content = markdown.to_html();
+        let search_content = markdown.to_plain_text();
+        let context = self.template_context(&html_content);
+        let rendered = self.engine.render("index.html", &context)?;
+        let output_file = output_root.join(relative_output);
+
+        // Create every parent directory so nested subchapter paths work on all platforms.
+        if let Some(parent) = output_file.parent() {
+            fs::create_dir_all(parent)?;
+        }
+        fs::write(&output_file, rendered)?;
+
+        let route = path_to_url(relative_output)?;
+        self.document_index += 1;
+        self.search_data.push(Document::new(
+            self.document_index,
+            site_url(&self.template.base_url, &route),
+            page_title,
+            search_content,
+        ));
+
+        let mut log = Logger::console_log();
+        log.info(format_args!(
+            "Building hypertext file {:?} successful",
+            output_file
+        ));
+        Ok(())
+    }
+
+    fn template_context(&self, content: &str) -> Context {
+        let mut context = Context::new();
+        context.insert("title", &self.template.name);
+        context.insert("author", &self.template.author);
+        context.insert("icon", &self.template.icon);
+        context.insert("keywords", &self.template.keywords);
+        context.insert("language", &self.template.html_lang);
+        context.insert("base_url", &self.template.base_url);
+        context.insert("chapters", &self.template.chapters);
+        context.insert("custom_js", &self.template.custom_js);
+        context.insert("custom_css", &self.template.custom_css);
+        context.insert("highlight", &self.template.highlight);
+        context.insert("description", &self.template.description);
+        context.insert("content", content);
+        context
+    }
+
+    fn save_data_json(&self, output_root: &Path) -> TypikonResult<()> {
         let json_data = serde_json::to_string_pretty(&self.search_data)?;
-        let out_root_path = &self.settings.get_output_path();
-        let data_json_path = Path::new(out_root_path).join("data.json");
+        let data_json_path = output_root.join("data.json");
         let mut file = File::create(data_json_path)?;
         file.write_all(json_data.as_bytes())?;
+        file.sync_all()?;
         Ok(())
     }
+}
 
-    // copy theme assets to output directory
-    fn copy_theme_assets(&self) {
-        let mut log = Logger::console_log();
-        let from = format!(
-            "{}/{}/assets",
-            self.settings.get_theme_path(),
-            self.settings.get_theme_name()
-        );
+fn validate_book(root: &Root, input_root: &Path) -> TypikonResult<()> {
+    resolve_markdown_file(input_root, Path::new(&root.path), "index")?;
+    for chapter in &root.chapters {
+        if chapter.title.trim().is_empty() {
+            return Err(invalid_input("Chapter titles cannot be empty").into());
+        }
+        resolve_markdown_file(input_root, Path::new(&chapter.path), "chapter")?;
+        for sub_chapter in &chapter.sub_chapters {
+            if sub_chapter.title.trim().is_empty() {
+                return Err(invalid_input("Subchapter titles cannot be empty").into());
+            }
+            resolve_markdown_file(input_root, Path::new(&sub_chapter.path), "subchapter")?;
+        }
+    }
+    Ok(())
+}
 
-        let to = format!("{}/assets", self.settings.get_output_path());
+fn resolve_markdown_file(input_root: &Path, path: &Path, label: &str) -> TypikonResult<PathBuf> {
+    let relative = validate_relative_path(path, &format!("{label} path"))?;
+    markdown_route(&relative)?;
+    let source = input_root.join(relative);
+    let canonical = source.canonicalize().map_err(|error| {
+        invalid_input(format!(
+            "{label} file does not exist {}: {error}",
+            source.display()
+        ))
+    })?;
 
-        // copy theme assets
-        match utils::copy_file(Path::new(&from), Path::new(&to)) {
-            Ok(_) => log.info(format_args!("Building static assets {:?} successful", &to)),
-            Err(err) => log.error(format_args!("Failed to build static assets : {:?}", err)),
+    // Recheck the canonical prefix to prevent symlinks from reading files outside the input.
+    if !canonical.starts_with(input_root) || !canonical.is_file() {
+        return Err(invalid_input(format!(
+            "{label} must be a file inside the input directory: {}",
+            source.display()
+        ))
+        .into());
+    }
+
+    Ok(canonical)
+}
+
+fn validate_output_routes(root: &Root) -> TypikonResult<()> {
+    let mut routes = HashSet::new();
+    routes.insert(PathBuf::from("index.html"));
+
+    for chapter in &root.chapters {
+        let chapter_route = markdown_route(Path::new(&chapter.path))?;
+        insert_unique_route(&mut routes, chapter_route.join("index.html"))?;
+
+        for sub_chapter in &chapter.sub_chapters {
+            let sub_route = markdown_route(Path::new(&sub_chapter.path))?;
+            let mut output = chapter_route.join(sub_route);
+            output.set_extension("html");
+            insert_unique_route(&mut routes, output)?;
         }
     }
 
-    fn create_workspace(&self) {
-        let mut log = Logger::console_log();
-        let base_path = Path::new(self.settings.get_output_path());
+    Ok(())
+}
 
-        if base_path.exists() {
-            let _ = fs::remove_dir_all(base_path);
-        }
+fn insert_unique_route(routes: &mut HashSet<PathBuf>, route: PathBuf) -> TypikonResult<()> {
+    if !routes.insert(route.clone()) {
+        return Err(invalid_input(format!(
+            "Multiple chapters generate the same output path: {}",
+            route.display()
+        ))
+        .into());
+    }
+    Ok(())
+}
 
-        let _ = fs::create_dir(base_path).map_err(|err| {
-            log.error(format_args!(
-                "Failed to create working directory : {:?}",
-                err
-            ));
-            return;
-        });
+fn unique_sibling_path(output: &Path, suffix: &str) -> TypikonResult<PathBuf> {
+    let parent = output
+        .parent()
+        .ok_or_else(|| invalid_input("The output directory has no parent"))?;
+    let name = output
+        .file_name()
+        .and_then(|value| value.to_str())
+        .ok_or_else(|| invalid_input("The output directory name must be valid UTF-8"))?;
 
-        log.info(format_args!(
-            "New create working directory {:?} successful",
-            base_path
+    loop {
+        let counter = UNIQUE_PATH_COUNTER.fetch_add(1, Ordering::Relaxed);
+        let candidate = parent.join(format!(
+            ".{name}.typikon-{suffix}-{}-{counter}",
+            std::process::id()
         ));
-    }
-
-    fn render_index_html(&mut self) {
-        let mut log = Logger::console_log(); // initialize console logger.
-        let template = Template::new(&self.settings, &self.root.get_chapters());
-
-        let base_path = Path::new(self.settings.get_input_path());
-        let index_file = base_path.join(&self.root.path);
-
-        // read markdown content from file
-        match fs::read_to_string(&index_file) {
-            Ok(markdown_content) => {
-                // create Hypertext instance
-                let hypertext = Hypertext::new(
-                    &template.name,
-                    &index_file.display().to_string(),
-                    Markdown::new(markdown_content),
-                );
-
-                let mut context = Context::new();
-                context.insert("title", &template.name);
-                context.insert("icon", &template.icon);
-                context.insert("keywords", &template.keywords);
-                context.insert("language", &template.html_lang);
-                context.insert("chapters", &template.chapters);
-                context.insert("custom_js", &template.custom_js);
-                context.insert("custom_css", &template.custom_css);
-                context.insert("highlight", &template.highlight);
-                context.insert("description", &template.description);
-                context.insert("content", &hypertext.to_html());
-
-                // render template
-                let rendered = self.engine.render("index.html", &context).unwrap();
-
-                // get the root inputs directory path.
-                let out_base_path = Path::new(self.settings.get_output_path());
-
-                let index_chapter_file = out_base_path.join("index.html");
-
-                // push full text search data
-                self.document_index += 1;
-                self.search_data.push(Document::new(
-                    self.document_index,
-                    "/index.html".to_string(),
-                    template.name.clone(),
-                    hypertext.to_html(),
-                ));
-
-                // write to file /chapter2/chapter_1.1.1.html
-                match fs::write(index_chapter_file.display().to_string(), rendered) {
-                    Ok(_) => log.info(format_args!(
-                        "Building hypertext file {:?} successful",
-                        index_chapter_file
-                    )),
-                    Err(err) => log.error(format_args!("Failed to data write file: {:?}", err)),
-                }
-            }
-            Err(_) => log.error(format_args!("file not found {:?}", index_file)),
+        if !candidate.exists() {
+            return Ok(candidate);
         }
     }
+}
 
-    fn render_sub_chapter_html(&mut self) {
-        let mut log = Logger::console_log();
-        let template = Template::new(&self.settings, &self.root.get_chapters());
-
-        let root = self.settings.get_output_path();
-        let base_path = Path::new(&root);
-
-        let sub_chapters_html = self.sub_chapters_html();
-
-        // iterate over sub-chapters and their HTML content
-        for (chapter_title, html_chapters) in sub_chapters_html.iter() {
-            for html_content in html_chapters.iter() {
-                // generate full file path
-                let chapter_dir = base_path.join(&chapter_title.replace(' ', "-").to_lowercase());
-
-                // create context and add data
-                let mut context = Context::new();
-                context.insert("title", &template.name);
-                context.insert("icon", &template.icon);
-                context.insert("keywords", &template.keywords);
-                context.insert("language", &template.html_lang);
-                context.insert("chapters", &template.chapters);
-                context.insert("custom_js", &template.custom_js);
-                context.insert("custom_css", &template.custom_css);
-                context.insert("highlight", &template.highlight);
-                context.insert("description", &template.description);
-                context.insert("content", &html_content.to_html());
-
-                // render template
-                let rendered = self.engine.render("index.html", &context).unwrap();
-
-                // write to file /chapter2/chapter_1.1.1.md => /chapter2/chapter_1.1.1
-                let sub_chapter_file = chapter_dir.join(
-                    utils::remove_md_extension(&html_content.path)
-                        .replace(' ', "-")
-                        .to_lowercase(),
-                );
-
-                // push full text search data
-                self.document_index += 1;
-                self.search_data.push(Document::new(
-                    self.document_index,
-                    format!(
-                        "/{}/{}.html",
-                        chapter_title.replace(' ', "-").to_lowercase(),
-                        utils::remove_md_extension(&html_content.path)
-                            .replace(' ', "-")
-                            .to_lowercase()
-                    ),
-                    html_content.title.to_string(),
-                    html_content.to_html(),
-                ));
-
-                // write to file /chapter2/chapter_1.1.1.html
-                match fs::write(
-                    format!("{}.html", &sub_chapter_file.display().to_string()),
-                    &rendered,
-                ) {
-                    Ok(_) => log.info(format_args!(
-                        "Building hypertext file {:?} successful",
-                        sub_chapter_file
-                    )),
-                    Err(err) => log.error(format_args!("Failed to write file: {:?}", err)),
-                }
-            }
-        }
+fn replace_output_directory(temporary: &Path, output: &Path) -> TypikonResult<()> {
+    if !output.exists() {
+        fs::rename(temporary, output)?;
+        return Ok(());
     }
 
-    fn render_chapter_html(&mut self) {
-        let mut log = Logger::console_log();
-        let template = Template::new(&self.settings, &self.root.get_chapters());
-        let root = self.settings.get_output_path();
-        let base_path = Path::new(&root);
-
-        let chapters_html: HashMap<String, Hypertext> = self.chapters_html();
-
-        // iterate over chapters and their HTML content
-        for (chapter_title, html_content) in chapters_html.iter() {
-            let chapter_dir = base_path.join(&chapter_title.replace(' ', "-").to_lowercase());
-            let chapter_file = chapter_dir.join("index.html");
-
-            // create directory
-            match fs::create_dir_all(&chapter_dir) {
-                Ok(_) => log.info(format_args!("Folder created {:?} successful", chapter_dir)),
-                Err(err) => log.error(format_args!("Failed to create directory: {:?}", err)),
-            }
-
-            let mut context = Context::new();
-            context.insert("title", &template.name);
-            context.insert("icon", &template.icon);
-            context.insert("keywords", &template.keywords);
-            context.insert("language", &template.html_lang);
-            context.insert("chapters", &template.chapters);
-            context.insert("custom_js", &template.custom_js);
-            context.insert("custom_css", &template.custom_css);
-            context.insert("highlight", &template.highlight);
-            context.insert("description", &template.description);
-            context.insert("content", &html_content.to_html());
-
-            // push full text search data
-            self.document_index += 1;
-            self.search_data.push(Document::new(
-                self.document_index,
-                format!(
-                    "/{}/index.html",
-                    chapter_title.replace(' ', "-").to_lowercase(),
-                ),
-                html_content.title.to_string(),
-                html_content.to_html(),
-            ));
-
-            // render template
-            let rendered = self.engine.render("index.html", &context).unwrap();
-
-            // write to file
-            match fs::write(&chapter_file, &rendered) {
-                Ok(_) => log.info(format_args!(
-                    "Building hypertext file {:?} successful",
-                    chapter_file
-                )),
-                Err(err) => log.error(format_args!("Failed to data write file: {:?}", err)),
-            }
-        }
+    let backup = unique_sibling_path(output, "backup")?;
+    fs::rename(output, &backup)?;
+    if let Err(error) = fs::rename(temporary, output) {
+        let restore_result = fs::rename(&backup, output);
+        return match restore_result {
+            Ok(()) => Err(error.into()),
+            Err(restore_error) => Err(format!(
+                "Failed to publish the new site: {error}; restoring the old site also failed: {restore_error}"
+            )
+            .into()),
+        };
     }
 
-    // HTML content for chapters and return as HashMap<String, html::Hypertext>
-    fn chapters_html(&self) -> HashMap<String, html::Hypertext> {
-        let mut result: HashMap<String, html::Hypertext> = HashMap::new();
-        let mut log = Logger::console_log();
-
-        // get chapters from root if available
-        for chapter in self.root.get_chapters() {
-            let chapter_index_path = Path::new(&chapter.path);
-
-            let chapter_path = format!(
-                "{}/{}",
-                self.settings.get_input_path(),
-                &chapter_index_path.display().to_string()
-            );
-
-            // read markdown content from file
-            match fs::read_to_string(&chapter_path) {
-                Ok(markdown_content) => {
-                    // create Hypertext instance
-                    let hypertext = Hypertext::new(
-                        &chapter.title,
-                        &chapter_path,
-                        Markdown::new(&markdown_content),
-                    );
-
-                    // insert into result HashMap
-                    result.insert(utils::remove_md_extension(chapter.path.as_str()), hypertext);
-
-                    log.info(format_args!(
-                        "Loading markdown file {:?} successful",
-                        chapter_path
-                    ));
-                }
-                Err(_) => log.error(format_args!("file not found {:?}", &chapter_path)),
-            }
-        }
-
-        result
-    }
-
-    // HTML content for sub-chapters and return as HashMap<String, Vec<html::Hypertext>>
-    fn sub_chapters_html(&self) -> HashMap<String, Vec<html::Hypertext>> {
-        let mut result: HashMap<String, Vec<html::Hypertext>> = HashMap::new();
-        let mut log = Logger::console_log();
-
-        // iterate over chapters
-        for chapter in self.root.get_chapters() {
-            let mut chapter_hypertexts: Vec<html::Hypertext> = Vec::new();
-
-            for sub_chapter in &chapter.sub_chapters {
-                let sub_chapter_path =
-                    format!("{}/{}", self.settings.get_input_path(), &sub_chapter.path);
-
-                // read markdown content from file
-                match fs::read_to_string(&sub_chapter_path) {
-                    Ok(markdown_content) => {
-                        // create Hypertext instance
-                        let hypertext = Hypertext::new(
-                            &sub_chapter.title,
-                            &sub_chapter.path,
-                            Markdown::new(&markdown_content),
-                        );
-
-                        chapter_hypertexts.push(hypertext);
-
-                        log.info(format_args!(
-                            "Loading markdown file {:?} successful",
-                            sub_chapter_path
-                        ));
-                    }
-                    Err(_) => log.error(format_args!("File not found {:?}", sub_chapter_path)),
-                }
-            }
-
-            // insert sub-chapters into result HashMap
-            result.insert(
-                utils::remove_md_extension(chapter.path.as_str()),
-                chapter_hypertexts,
-            );
-        }
-
-        result
-    }
+    fs::remove_dir_all(backup).map_err(|error| -> TypikonError { error.into() })?;
+    Ok(())
 }

@@ -1,4 +1,4 @@
-use pulldown_cmark::{html, Options, Parser};
+use pulldown_cmark::{html, Event, Options, Parser};
 use serde::{Deserialize, Serialize};
 use std::{
     fs::File,
@@ -23,6 +23,19 @@ impl Markdown {
 
     pub fn get_content(&self) -> String {
         self.0.clone()
+    }
+
+    pub fn to_plain_text(&self) -> String {
+        let mut output = String::new();
+        for event in Parser::new_ext(&self.0, Options::all()) {
+            match event {
+                Event::Text(text) | Event::Code(text) => output.push_str(&text),
+                Event::SoftBreak | Event::HardBreak => output.push('\n'),
+                Event::End(_) => output.push(' '),
+                _ => {}
+            }
+        }
+        output.split_whitespace().collect::<Vec<_>>().join(" ")
     }
 }
 

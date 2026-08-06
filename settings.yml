@@ -5,6 +5,7 @@ description: >
   similar to mdbook and hugo, but it focuses only on rendering markdown into
   an online book, and is easier to use than the other tools.
 language: en
+base_url: ""
 keywords: typikon,book,website,generator,static,html,css,js,theme,rust
 directory:
   theme: theme

@@ -1,3 +1,5 @@
 pub mod book;
-pub mod utils;
+pub mod cli;
+mod common;
 pub mod html;
+pub mod utils;
